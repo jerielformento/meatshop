@@ -1,0 +1,213 @@
+var isRun = 0;
+var onRequest = "";
+var onProcess = "";
+
+function ajxCreateMap( page, data, appendTo ) {
+	
+	if(isRun === 0) {
+		$("#" + appendTo).html("<thead><tr><td colspan='8' style='text-align:center'><img src='images/loader.gif' height=34 width=34></td></tr></thead>");
+		isRun += 1;
+	}
+	
+	page = 'ajax/' + page + '.php';
+	
+	$.post(page, data, function(response) {
+		var counter = 1;
+		var user = "";
+		var limit = 0;
+		// get response
+		
+		var json = $.parseJSON(response);
+		var names = Object.getOwnPropertyNames(json);
+		var fields = Object.keys(names).length;
+		var count = Object.keys(json["onboard"]).length;
+		var gridx = json['size']['x'];
+		var gridy = json['size']['y'];
+		var newline = 1;
+		var returnString = "";
+		
+		returnString += "<tbody>";
+		
+		
+		json['onboard'].forEach(function(info) {
+			if(newline == 1) {
+				returnString += "<tr>";
+			}
+			
+			if(info['Station'] !== null && info['Station'] !== "") {
+				addClass = "";
+				addAttr = "";
+				if(info['Status'] === "logged") {
+					addClass = 'class="online"';
+					addAttr = 'a-stat="Online"';
+				} else if(info['Status'] === "pause") {
+					addClass = 'class="break"';
+					addAttr = 'a-stat="On Break"';
+				} else {
+					addClass = 'class="vacant"';
+					addAttr = '';
+				}
+				
+				returnString += "<td " + addClass + " " + addAttr + " pos=\"" + info['Position'] + "\" cur-agt=\"" + info['Agent'] + "\"><div style=\"font-size:10px; width:45px; height:10px;\"><span class=\"glyphicon glyphicon-user\"></span> &nbsp;" + info['Station'].slice(-4) + "</div></td>";
+			} else {
+				returnString += "<td class=\"active\" pos=\"" + info['Position'] + "\"><div style=\"font-size:10px; width:45px; height:10px;\"></div></td>";
+			}
+			
+			if(newline == gridx) {
+				returnString += "</tr>";
+				newline = 1;
+			} else {
+				newline += 1;
+			}
+		});
+		
+		returnString += "</tbody>";
+		$("#" + appendTo).html(returnString);
+		seatsAct();
+		
+	}).fail(function() {
+		console.log("Stop request.");
+	});
+}
+
+function confBoxEvents() {
+	$('#btnid').on('click', function(){
+		alert("click");
+	});
+	
+	$('#agt-off').on('click', function() {
+		//alert(onProcess);
+		$.ajax({
+			url: 'ajax/force_logoff.php',
+			type: 'post',
+			data: { agt: onProcess },
+			success: function(response) {
+				console.log($.parseJSON(response));
+				alertBox(response, 'msg-alert', '', '', 'json', 'fade');
+				$('#agt-force').modal('hide');
+			}
+		});
+	});
+}
+
+function seatsAct() {
+	
+	$('#map-list-grid td').not('.online, .break').on('mousemove', function() {
+		$('.map-details').removeClass('current');
+	});
+	
+	$('#map-list-grid td').not('.active, .vacant').hover(function(evt) {
+		
+		var agent = $(this).attr('cur-agt');
+		var status = $(this).attr('a-stat');
+		
+		$('.map-details').addClass('current');
+		
+		$(".map-details").html('<img src="images/loader.gif" height=16 width=16 style="margin:5px 15px 5px 85px;">');
+		$('.map-details').append('<br /><strong>Agent:</strong> &nbsp;' + agent.toLowerCase());
+		$('.map-details').append('<br /><strong>Status:</strong> &nbsp;' + status);
+		$('.map-details').append('<br /><button class="btn btn-success btn-sm" id="frc-lg" agent="' + agent.toLowerCase() + '">Force log-off</button>');
+		$('#frc-lg').on('click', function() {
+			$('.map-details').removeClass('current');
+			// console.log($(this).attr('agent'));
+			onProcess = $(this).attr('agent');
+			var content = "Are you sure do you want to force log-off <strong>" + $(this).attr('agent') + "</strong> ?";
+			confirmBox('agt-force', 'Force Log-off', content, 'agt-off', 'Log-off', 'danger', 'show-box');
+		});
+					
+		onRequest = agent;
+		
+		$.ajax({
+			url: 'ajax/view_seats_info.php',
+			type: 'post',
+			data: { username: agent },
+			success: function(response) {
+				if(onRequest == agent) {
+					$('.map-details').html('<div style="margin: 0 36px -10px 40px;">' + response + '</div>');
+					$('.map-details').append('<br /><strong>Agent:</strong> &nbsp;' + agent.toLowerCase());
+					$('.map-details').append('<br /><strong>Status:</strong> &nbsp;' + status);
+					$('.map-details').append('<br /><button class="btn btn-success btn-sm" id="frc-lg" agent="' + agent.toLowerCase() + '">Force log-off</button>');
+					
+					$('#frc-lg').on('click', function() {
+						$('.map-details').removeClass('current');
+						// console.log($(this).attr('agent'));
+						onProcess = $(this).attr('agent');
+						var content = "Are you sure do you want to force log-off <strong>" + $(this).attr('agent') + "</strong> ?";
+						confirmBox('agt-force', 'Force Log-off', content, 'agt-off', 'Log-off', 'danger', 'show-box');
+					});
+				}
+			}
+		});
+	}).on('mousemove', function(evt) {
+		
+		var pos = $(this).position();
+		var topPosition = 0;
+		var leftPosition = 0;
+		
+		topPosition = pos.top + 5;
+		leftPosition = pos.left + 5;
+		
+		$('.map-details').css({
+			top: topPosition,
+			left: leftPosition
+		});
+		
+	});
+	
+}
+
+/* On click */
+
+
+/* On change */
+$('#drop-camp').on('change', function() {
+	$('#drop-team').html("<option disabled selected>Loading ..</option>");
+	
+	$.ajax({
+		url: 'ajax/fill_team.php',
+		type: 'get',
+		data: { camp: $(this).val() },
+		success: function(response) {
+			$('#drop-team').html(response);
+		},
+		error: function (xhr, ajaxOptions, thrownError) {
+           console.log(xhr.status);
+           console.log(xhr.responseText);
+           console.log(thrownError);
+		}
+	});
+});
+
+/* On hover */
+
+/* request every 12 secs for map */
+(function poll(){
+   setTimeout(function(){
+		//Update your dashboard gauge
+		if(isRun > 0) {
+			var camp = $('#drop-camp').val();
+			ajxCreateMap( 'view_seats', { camp_id: camp }, 'map-list-grid' );
+
+			//Setup the next poll recursively
+			poll();
+		}
+  }, 15000);
+})();
+
+
+
+/* On load */
+
+$('#sub-fil').on('click', function() {
+	var camp = $('#drop-camp').val();
+	ajxCreateMap( 'view_seats', { camp_id: camp }, 'map-list-grid' );
+});
+
+$('#datepicker').datepicker({
+	inline: true, 
+	showOtherMonths: true,  
+	dateFormat: 'yy-mm-dd',
+	dayNamesMin: ['&nbsp;Sun', '&nbsp;Mon', '&nbsp;Tue', '&nbsp;Wed', '&nbsp;Thu', '&nbsp;Fri', '&nbsp;Sat'],  
+});
+
+loadFilters();

@@ -1,0 +1,66 @@
+/* request functions */
+var page = "";
+var data = "";
+var header = "";
+
+	function ajxDisplayList( page, data, header, appendTo, type ) {
+		
+		page = 'ajax/' + page + '.php';
+		
+		$.post(page, data, function(response) {
+			
+			var counter = 0;
+			var getname = "";
+			
+			// get response
+			var json = $.parseJSON(response);
+			var names = Object.getOwnPropertyNames(json);
+			var fields = Object.keys(names).length;
+			var count = Object.keys(json["Key"]).length;
+			
+			var content = "";
+			
+			
+			content = "<thead>";
+			content += "<tr>";
+			
+			// display table header
+			header.forEach(function(field) {
+				content += "<th>" + field + "</th>";
+			});
+			
+			content += "</tr>" +
+			"</thead>" +
+			"<tbody>";
+			
+			// display table body
+			for(var x = 0; x < count; x++) {
+				content += "<tr>";
+				for(var y = 0; y < fields; y++) {
+					if(counter == 0) {
+						content += "<td>" + json[names[y]][x] + "</td>";
+						getname = json[names[y]][x];
+						counter = 1;
+					} else {
+						content += "<td>" + json[names[y]][x] + "</td>";
+					}
+				}
+				content += "</tr>";
+				counter = 0;
+			}
+			
+			content += "</tbody></table>";
+			
+			if(type == 1) {
+				$("#" + appendTo).html(content);
+			} else if(type == 2) {
+				$("." + appendTo).html(content);
+			} else {
+				alert("Sending data has an error due to invalid type value.");
+			}
+			
+		}).fail(function() {
+			alert( "Posting data failed." );
+		});
+		
+	}

@@ -1,0 +1,442 @@
+var maxUtilList;
+
+function ajxMntrTeam( page, data, appendTo, filBy ) {
+	
+	$("#" + appendTo).html("<thead><tr><td colspan='8' style='text-align:center'><img src='images/loader.gif' height=34 width=34></td></tr></thead>");
+	
+	page = 'ajax/' + page + '.php';
+	
+	$.post(page, data, function(response) {
+		
+		var counter = 1;
+		var user = "";
+		var limit = 0;
+		// get response
+		
+		var json = $.parseJSON(response);
+		var names = Object.getOwnPropertyNames(json);
+		var fields = Object.keys(names).length;
+		var count = Object.keys(json["users"]).length;
+		maxUtilList = json["names"];
+		var activeAgents = 0;
+		var presentAgents = 0;
+		var lateAgents = 0;
+		var undertimeAgents = 0;
+		var lateUndertimeAgents = 0;
+		var absentAgents = 0;
+		var rdAgents = 0;
+		var leaveAgents = 0;
+		
+		returnString = "<thead>";
+		returnString += "<tr>";
+		//returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Date</span></th>";
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Campaign</span></th>";
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Team</span></th>";
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Agent</span></th>";
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Schedule</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Logged</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Breaks</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">PreOT</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">PostOT</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">StaffedTime</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">TotalPause</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Remarks</span></th>";	
+		returnString += "</tr>" +
+		"</thead>" +
+		"<tbody>";
+		
+		for(var i = 0; i < count; i++) {
+		
+			var agentStats = json['users'][i]; 
+			
+			if(filBy == 0) {
+			
+				returnString += "<tr>";
+				//returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['DateBegin'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Campaign'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Team'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Username'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['From'] + "-" + agentStats['Agent']['To'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['In'] + "-" + agentStats['Agent']['Out'] + "</td>";
+				
+				var getPauses = "";
+				agentStats['Agent']['Break'].forEach(function(pauses) {
+					getPauses += (pauses == "") ? "" : pauses + "<br />";
+				});
+				
+				returnString += "<td style=\"font-size:12px;\">" + ((getPauses == "") ? "No breaks yet." : getPauses) + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Pre'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Post'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['StaffedTime'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['TotalPause'] + "</td>";
+				
+				if(agentStats['Agent']['Remarks'] == "Active") {
+					returnString += "<td style=\"font-size:12px;\"><span class=\"label label-success\">" + agentStats['Agent']['Remarks'] + "</span></td>";
+					activeAgents += 1;
+				} else if(agentStats['Agent']['Remarks'] == "Present") {
+					returnString += "<td style=\"font-size:12px;\"><span class=\"label label-primary\">" + agentStats['Agent']['Remarks'] + "</span></td>";
+					presentAgents += 1;
+				} else if(agentStats['Agent']['Remarks'] == "Late") {
+					returnString += "<td style=\"font-size:12px;\"><span class=\"label label-warning\">" + agentStats['Agent']['Remarks'] + "</span></td>";
+					lateAgents += 1;
+				} else if(agentStats['Agent']['Remarks'] == "Undertime") {
+					returnString += "<td style=\"font-size:12px;\"><span class=\"label label-warning\">" + agentStats['Agent']['Remarks'] + "</span></td>";
+					undertimeAgents += 1;
+				} else if(agentStats['Agent']['Remarks'] == "Late / Undertime") {
+					returnString += "<td style=\"font-size:12px;\"><span class=\"label label-danger\">" + agentStats['Agent']['Remarks'] + "</span></td>";
+					lateUndertimeAgents += 1;
+				} else if(agentStats['Agent']['Remarks'] == "Absent") {
+					returnString += "<td style=\"font-size:12px;\"><span class=\"label label-default\">" + agentStats['Agent']['Remarks'] + "</span></td>";
+					absentAgents += 1;
+				} else if(agentStats['Agent']['Remarks'] == "Rest Day") {
+					returnString += "<td style=\"font-size:12px;\"><span class=\"label label-info\">" + agentStats['Agent']['Remarks'] + "</span></td>";
+					rdAgents += 1;
+				} else if(agentStats['Agent']['Remarks'] == "Today's Schedule") {
+					returnString += "<td style=\"font-size:12px;\"><span class=\"label label-info\">" + agentStats['Agent']['Remarks'] + "</span></td>";
+				} else if(agentStats['Agent']['Remarks'] == "Leave") {
+					returnString += "<td style=\"font-size:12px;\"><span class=\"label label-default\">" + agentStats['Agent']['Remarks'] + "</span></td>";
+					leaveAgents += 1;
+				}
+				
+				returnString += "</tr>";
+				
+			} else if(filBy == 1 && agentStats['Agent']['Remarks'] == 'Absent') {
+			
+				returnString += "<tr>";
+				//returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['DateBegin'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Campaign'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Team'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Username'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['From'] + "-" + agentStats['Agent']['To'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['In'] + "-" + agentStats['Agent']['Out'] + "</td>";
+				
+				var getPauses = "";
+				agentStats['Agent']['Break'].forEach(function(pauses) {
+					getPauses += (pauses == "") ? "" : pauses + "<br />";
+				});
+				
+				returnString += "<td style=\"font-size:12px;\">" + ((getPauses == "") ? "No breaks yet." : getPauses) + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Pre'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Post'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['StaffedTime'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['TotalPause'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\"><span class=\"label label-default\">" + agentStats['Agent']['Remarks'] + "</span></td>";
+				absentAgents += 1;
+				
+				returnString += "</tr>";
+				
+			} else if(filBy == 2 && agentStats['Agent']['Remarks'] == 'Late') {
+				
+				returnString += "<tr>";
+				//returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['DateBegin'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Campaign'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Team'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Username'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['From'] + "-" + agentStats['Agent']['To'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['In'] + "-" + agentStats['Agent']['Out'] + "</td>";
+				
+				var getPauses = "";
+				agentStats['Agent']['Break'].forEach(function(pauses) {
+					getPauses += (pauses == "") ? "" : pauses + "<br />";
+				});
+				
+				returnString += "<td style=\"font-size:12px;\">" + ((getPauses == "") ? "No breaks yet." : getPauses) + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Pre'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Post'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['StaffedTime'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['TotalPause'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\"><span class=\"label label-warning\">" + agentStats['Agent']['Remarks'] + "</span></td>";
+				lateAgents += 1;
+				
+				returnString += "</tr>";
+				
+			} else if(filBy == 3 && agentStats['Agent']['Remarks'] == 'Undertime') {
+				
+				returnString += "<tr>";
+				//returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['DateBegin'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Campaign'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Team'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Username'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['From'] + "-" + agentStats['Agent']['To'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['In'] + "-" + agentStats['Agent']['Out'] + "</td>";
+				
+				var getPauses = "";
+				agentStats['Agent']['Break'].forEach(function(pauses) {
+					getPauses += (pauses == "") ? "" : pauses + "<br />";
+				});
+				
+				returnString += "<td style=\"font-size:12px;\">" + ((getPauses == "") ? "No breaks yet." : getPauses) + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Pre'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Post'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['StaffedTime'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['TotalPause'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\"><span class=\"label label-warning\">" + agentStats['Agent']['Remarks'] + "</span></td>";
+				undertimeAgents += 1;
+				
+				returnString += "</tr>";
+				
+			} else if(filBy == 4 && agentStats['Agent']['Remarks'] == 'Late / Undertime') {
+				
+				returnString += "<tr>";
+				//returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['DateBegin'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Campaign'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Team'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Username'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['From'] + "-" + agentStats['Agent']['To'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['In'] + "-" + agentStats['Agent']['Out'] + "</td>";
+				
+				var getPauses = "";
+				agentStats['Agent']['Break'].forEach(function(pauses) {
+					getPauses += (pauses == "") ? "" : pauses + "<br />";
+				});
+				
+				returnString += "<td style=\"font-size:12px;\">" + ((getPauses == "") ? "No breaks yet." : getPauses) + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Pre'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Post'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['StaffedTime'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['TotalPause'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\"><span class=\"label label-danger\">" + agentStats['Agent']['Remarks'] + "</span></td>";
+				lateUndertimeAgents += 1;
+
+				returnString += "</tr>";
+				
+			} else if(filBy == 5 && agentStats['Agent']['Remarks'] == 'Leave') {
+			
+				returnString += "<tr>";
+				//returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['DateBegin'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Campaign'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Team'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Username'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['From'] + "-" + agentStats['Agent']['To'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['In'] + "-" + agentStats['Agent']['Out'] + "</td>";
+				
+				var getPauses = "";
+				agentStats['Agent']['Break'].forEach(function(pauses) {
+					getPauses += (pauses == "") ? "" : pauses + "<br />";
+				});
+				
+				returnString += "<td style=\"font-size:12px;\">" + ((getPauses == "") ? "No breaks yet." : getPauses) + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Pre'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Post'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['StaffedTime'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['TotalPause'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\"><span class=\"label label-default\">" + agentStats['Agent']['Remarks'] + "</span></td>";
+				leaveAgents += 1;
+				returnString += "</tr>";
+				
+			} else if(filBy == 6 && agentStats['Agent']['Remarks'] == 'Rest Day') {
+
+				returnString += "<tr>";
+				//returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['DateBegin'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Campaign'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Team'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Username'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['From'] + "-" + agentStats['Agent']['To'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['In'] + "-" + agentStats['Agent']['Out'] + "</td>";
+				
+				var getPauses = "";
+				agentStats['Agent']['Break'].forEach(function(pauses) {
+					getPauses += (pauses == "") ? "" : pauses + "<br />";
+				});
+				
+				returnString += "<td style=\"font-size:12px;\">" + ((getPauses == "") ? "No breaks yet." : getPauses) + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Pre'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['Post'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['StaffedTime'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\">" + agentStats['Agent']['TotalPause'] + "</td>";
+				returnString += "<td style=\"font-size:12px;\"><span class=\"label label-info\">" + agentStats['Agent']['Remarks'] + "</span></td>";
+				rdAgents += 1;
+				returnString += "</tr>";
+				
+			}
+		}
+		
+		returnString += "</tbody>";
+		
+		$('#' + appendTo).html(returnString);
+		monitorInformation(activeAgents, presentAgents, lateAgents, undertimeAgents, lateUndertimeAgents, absentAgents, rdAgents, leaveAgents, json['m_util'], agentStats['Agent']['DateBegin'] + " " + json['as_of']);
+		
+	}).fail(function() {
+		console.log( "Posting data failed." );
+	});
+}
+
+function confBoxEvents() {
+
+}
+
+
+function listAction() {
+	$('#show-max-util').on('click', function(){
+		var content = "";
+		var limit = maxUtilList.length;
+		//console.log('wew');
+		//confirmBox('agt-edit-info','Agent Information',content,'','close','danger','show-rmd-box');
+		content += "<div class=\"table-responsive\" style=\"border:1px solid #ddd; height:500px;\"><table class=\"table\">";
+		content += "<thead>";
+		content += "<tr>";
+		content += "<th class=\"active\"><span style=\"font-size:12px;\">Agent</span></th>";
+		content += "<th class=\"active\"><span style=\"font-size:12px;\">In</span></th>";
+		content += "<th class=\"active\"><span style=\"font-size:12px;\">Out</span></th>";
+		content += "</tr>";
+		content += "</thead>";
+		
+		content += "<tbody>";
+		for(var i = 0; i < limit; i++) {
+			//console.log(maxUtilList[i]['agent']);
+			content += "<tr>";
+			content += "<td style=\"font-size:12px;\">" + maxUtilList[i]['agent'] + "</td>";
+			content += "<td style=\"font-size:12px;\">" + maxUtilList[i]['start'] + "</td>";
+			content += "<td style=\"font-size:12px;\">" + isActive(maxUtilList[i]['end']) + "</td>";
+			content += "</tr>";
+		}
+		          
+		content += "</tbody>";
+		content += "</table></div>";
+		
+		confirmBoxLarge('view-max-list','Max Utilization List',content,'','close','danger','show-box');
+	});
+	
+}
+
+function isActive( val ) {
+	return (val === '0001-01-01 00:00:00') ? '--' : val;
+}
+
+
+function monitorInformation( activeAgt, presentAgt, lateAgt, undertimeAgt, lateUndrAgt, absentAgt, rdAgt, onLV, mxUtl, asOf ) {
+	var returnString = "";
+	var maxUtil = mxUtl;
+	var maxAsOf = convertTime(asOf);
+	var currUtil = activeAgt;
+	var numAbs = absentAgt;
+	var woSched = rdAgt;
+	var onLeave = onLV;
+	
+	returnString = "<thead>";
+	returnString += "<tr>";
+	returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Max Utilization</span></th>";
+	returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Current Utilization</span></th>";
+	returnString += "<th class=\"active\"><span style=\"font-size:12px;\">No. of Absent</span></th>";	
+	returnString += "<th class=\"active\"><span style=\"font-size:12px;\">On Leave</span></th>";
+	returnString += "<th class=\"active\"><span style=\"font-size:12px;\">On Restday</span></th>";
+	returnString += "</tr>" +
+	"</thead>" +
+	"<tbody>";	
+	returnString += "<tr>";
+	returnString += "<td style=\"font-size:12px;\"><span id=\"show-max-util\" style=\"text-decoration:underline; color:#30AFEA; cursor:pointer;\" title=\"View list\">" + maxUtil + " as of " + maxAsOf + "</span></td>";
+	returnString += "<td style=\"font-size:12px;\">" + currUtil + "</td>";
+	returnString += "<td style=\"font-size:12px;\">" + numAbs + "</td>";
+	returnString += "<td style=\"font-size:12px;\">" + onLeave + "</td>";
+	returnString += "<td style=\"font-size:12px;\">" + woSched + "</td>";
+	returnString += "</tr>";
+	returnString += "</tbody>";
+	
+	$('#monitor-stats').html(returnString);
+	listAction();
+}
+
+
+function optionManager() {
+	
+	$('#c-def').on('click', function() {
+		$(this).attr('checked',true).val(1);
+		$('#c-est').removeAttr('checked').val(0);
+		$('#c-dst').removeAttr('checked').val(0);
+	});
+
+	$('#c-est').on('click', function() {
+		$(this).attr('checked',true).val(1);
+		$('#c-def').removeAttr('checked').val(0);
+		$('#c-dst').removeAttr('checked').val(0);
+	});
+
+	$('#c-dst').on('click', function() {
+		$(this).attr('checked',true).val(1);
+		$('#c-def').removeAttr('checked').val(0);
+		$('#c-est').removeAttr('checked').val(0);
+	});
+}
+
+
+/* On click */
+$('#sub-fil').on('click', function() {
+	var date = $('#dt_pick').val();
+	var campaign = isNull($('#drop-camp').val());
+	var team = isNull($('#drop-team').val());
+	var def = $('#c-def').val();
+	var est = $('#c-est').val();
+	var dst = $('#c-dst').val();
+	var filterby = $('#drop-fil').val();
+	console.log(filterby);
+	ajxMntrTeam( 'view_monitoring', { date_req: date, camp: campaign, team: team, def: def, est: est, dst: dst }, "monitor-grid", filterby );
+	
+});
+
+$('#ext-data').on('click', function() {
+	var camp = isNull($('#drop-camp').val());
+	var team = isNull($('#drop-team').val());
+	var date = isNull($('#dt_pick').val());
+	var def = $('#c-def').val();
+	var est = $('#c-est').val();
+	var dst = $('#c-dst').val();
+	
+	if(camp != "" && team != "" && date != "") {
+		window.location.href = "reports/extract_staffed_time.php?date=" + date + "&camp=" + camp + "&team=" + team + "&def=" + def + "&est=" + est + "&dst=" + dst;
+	} else {
+		alertBox('', 'msg-alert', 'warning', 'Select campaign and team first.', '', 'fade');
+	}
+});
+
+
+/* On change */
+
+$('#drop-camp').on('change', function() {
+	$('#drop-team').html("<option disabled selected>Loading ..</option>");
+	
+	$.ajax({
+		url: 'ajax/fill_team_monitor.php',
+		type: 'get',
+		data: { camp: $(this).val() },
+		success: function(response) {
+			$('#drop-team').html(response);
+		},
+		error: function (xhr, ajaxOptions, thrownError) {
+           console.log(xhr.status);
+           console.log(xhr.responseText);
+           console.log(thrownError);
+		}
+	});
+});
+
+
+/* On load */
+
+$('#dt_pick').datepicker({
+	inline: true, 
+	showOtherMonths: true,  
+	dateFormat: 'yy-mm-dd',
+	dayNamesMin: ['&nbsp;Sun', '&nbsp;Mon', '&nbsp;Tue', '&nbsp;Wed', '&nbsp;Thu', '&nbsp;Fri', '&nbsp;Sat'],  
+});
+
+//loadFilters();
+function fillMonitorCamp() {
+	$('#drop-camp').html('<option disabled selected> Loading ..</option>');
+	$('#drop-team').html('<option disabled selected> Loading ..</option>');
+	
+	$.ajax({
+		url: 'ajax/fill_camp_monitor.php',
+		success: function(response) {
+			$('#drop-camp').html(response);
+			$.ajax({
+				url: 'ajax/fill_team_monitor.php',
+				success: function(response) {
+					$('#drop-team').html(response);
+				}
+			});
+		}
+	});
+}
+
+fillMonitorCamp();
+optionManager();

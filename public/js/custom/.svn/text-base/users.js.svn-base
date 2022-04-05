@@ -1,0 +1,675 @@
+
+function viewUsersList( page, data, appendTo, startPage, endPage, currPage ) { 
+
+	$("#" + appendTo).html("<thead><tr><td colspan='8' style='text-align:center'><img src='images/loader.gif' height=34 width=34></td></tr></thead>");
+	
+	page = 'ajax/' + page + '.php';
+	
+	$.post(page, data, function(response) {
+		var counter = 1;
+		var user = "";
+		var limit = 0;
+		// get response
+		
+		var json = $.parseJSON(response);
+		var names = Object.getOwnPropertyNames(json);
+		var fields = Object.keys(names).length;
+		var count = Object.keys(json["users"]).length;
+
+		var returnString = "";
+		
+		returnString = "<thead>";
+		returnString += "<tr>";
+		$('#tot-res').html(" &nbsp;<span class=\"label label-info\" style=\"padding-top:4px;\">" + count + " Total</span>");
+		
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Username</span></th>";
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">First Name</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Middle Name</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Last Name</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Level</span></th>";		
+		returnString += "<th class=\"active\" colspan=\"3\" style=\"text-align:center;\"><span style=\"font-size:12px;\">Action</span></th>";	
+		
+		returnString += "</tr>" +
+		"</thead>" +
+		"<tbody>";
+		
+		limit = (count < endPage) ? count : endPage;
+		
+		for(var i = startPage; i < limit; i++) {
+			var userInfo = json["users"][i];
+			returnString += "<tr style=\"font-size:12px;\" class=\"clist\">";
+			returnString += "<td>" + userInfo['Username'] + "</td>";
+			returnString += "<td>" + ((userInfo['Fname'] === null) ? "N/A" : userInfo['Fname']) + "</td>";
+			returnString += "<td>" + ((userInfo['Mname'] === null) ? "N/A" : userInfo['Mname']) + "</td>";
+			returnString += "<td>" + ((userInfo['Lname'] === null) ? "N/A" : userInfo['Lname']) + "</td>";
+			returnString += "<td>" + ((userInfo['Priv'] === null) ? "N/A" : userInfo['Priv']) + "</td>";
+			returnString += "<td style=\"text-align:center;\"><button class=\"btn btn-warning btn-sm c-edt\" e-id=\"" + userInfo['uID'] + "\" title=\"Edit\"><span class=\"glyphicon glyphicon-pencil\" title=\"Edit\" style=\"cursor:pointer;\"></span></button></td>";
+			returnString += "<td style=\"text-align:center;\"><button class=\"btn btn-danger btn-sm c-del\" d-id=\"" + userInfo['uID'] + "\" d-name=\"" + userInfo['Username'] + "\" title=\"Remove\"><span class=\"glyphicon glyphicon-trash\" title=\"Remove\" d-id=\"" + userInfo['uID'] + "\" style=\"cursor:pointer;\"></span></button></td>";
+			returnString += "<td style=\"text-align:center;\"><button class=\"btn btn-primary btn-sm c-res\" r-id=\"" + userInfo['uID'] + "\" r-name=\"" + userInfo['Username'] + "\" title=\"Reset Password\"><span class=\"glyphicon glyphicon-lock\" title=\"Remove\" r-id=\"" + userInfo['uID'] + "\" style=\"cursor:pointer;\"></span></button></td>";
+			returnString += "</tr>";
+		}
+		
+		
+		returnString += "</tbody>";
+		$("#" + appendTo).html(returnString);
+		uPagination(json['limit']['pages'], currPage);
+		listAction();
+	}).fail(function() {
+		console.log( "Posting data failed." );
+	});
+	
+}
+
+function uPagination( limitPage, currentPage ) {
+	var returnString = "";
+	
+	if(limitPage !== 0) {
+		
+		returnString += '<ul class="pagination pagination-sm">';
+		returnString += (currentPage === 1) ? '<li class="disabled"><a href="#" aria-label="Previous">' : '<li><a href="#" aria-label="Previous" onclick="managePages(' + 1 + ')">';
+		returnString += '<span aria-hidden="true">&larr;</span>';
+		returnString += '</a>';
+		returnString += '</li>';
+		returnString += (currentPage === 1) ? '<li class="disabled"><a href="#" aria-label="Previous">' : '<li><a href="#" aria-label="Previous" onclick="managePages(\'prev\')">';
+		returnString += '<span aria-hidden="true">&laquo;</span>';
+		returnString += '</a>';
+		returnString += '</li>';		
+		returnString += '<li class="active"><a href="#">' + currentPage + '</a></li>';
+		returnString += (limitPage === currentPage) ? '<li class="disabled"><a href="#" aria-label="Next">' : '<li><a href="#" aria-label="Next" onclick="managePages(\'next\')">';
+		returnString += '<span aria-hidden="true">&raquo;</span>';
+		returnString += '</a>';
+		returnString += '</li>';
+		returnString += (limitPage === currentPage) ? '<li class="disabled"><a href="#" aria-label="Next">' : '<li><a href="#" aria-label="Next" onclick="managePages(' + limitPage + ')">';
+		returnString += '<span aria-hidden="true">&rarr;</span>';
+		returnString += '</a>';
+		returnString += '</li>';
+		returnString += '</ul>';
+	}
+	
+	$('#pagi-num-rows').html('<span class="label label-default pull-left">Page: ' + currentPage + ' out of ' + limitPage + '</span>');
+	$('#users-pagi').html(returnString);
+}
+	
+function managePages( val ) {
+	var range = 15;
+	var getCurp = $('#users-pagi li.active a').text();
+	var opt = 0;
+	
+	if(val === 'next') {
+		opt = (+getCurp === 0) ? 0 : +getCurp + 1;
+	} else if(val === 'prev') {
+		opt = (+getCurp === 0) ? 1 : +getCurp - 1;
+	} else {
+		opt = +val;
+	}
+	
+	var end = range * opt;
+	var start = end - range;
+	
+	viewUsersList('view_users', '', 'user-list-grid', start, end, opt);
+}
+
+
+function confBoxEvents() {
+	
+}
+
+
+function listAction() {
+	$('td button.c-edt').on('click', function() {
+		//alert("edit: " + $(this).attr('e-id'));
+		userEditForm($(this).attr('e-id'));
+		//editCampForm($(this).attr('e-id'));
+		//formAction();
+	});
+	
+	$('td button.c-del').on('click', function() {
+		//alert("del: " + $(this).attr('d-id'));
+		
+		var u_id = $(this).attr('d-id');
+		confirmBox('user-del-info','Delete User','Are you sure do you want to remove <br/><strong>' + $(this).attr('d-name') + '</strong> ?','del-user','Delete','danger','show-box');
+		$('#del-user').on('click', function() {
+			$.ajax({
+				url: 'ajax/deleteuser.php',
+				type: 'post',
+				data: { id: u_id },
+				success: function(response) {
+					var json = $.parseJSON(response);
+					alertBox(response, 'msg-alert', '', '', 'json', 'fade');
+					if(json['message'][0] === 'success') {
+						viewUsersList('view_users', '', 'user-list-grid', 0, 15, 1);
+					}
+					
+					$('#user-del-info').modal('hide');
+				}
+			});
+		});
+	});
+	
+	$('td button.c-res').on('click', function() {
+		//alert("del: " + $(this).attr('d-id'));
+		
+		var u_id = $(this).attr('r-id');
+		confirmBox('user-res-info','Reset Password','Are you sure do you want to reset user <br/><strong>' + $(this).attr('r-name') + '</strong> password ?','res-user','Reset','primary','show-box');
+		$('#res-user').on('click', function() {
+			$.ajax({
+				url: 'ajax/user_reset_pwd.php',
+				type: 'post',
+				data: { id: u_id },
+				success: function(response) {
+					var json = $.parseJSON(response);
+					alertBox(response, 'msg-alert', '', '', 'json', 'fade');
+					if(json['message'][0] === 'success') {
+						viewUsersList('view_users', '', 'user-list-grid', 0, 15, 1);
+					}
+					
+					$('#user-res-info').modal('hide');
+				}
+			});
+		});
+	});
+}
+
+
+function birthdateFill( bDate ) {
+	var split_date = "";
+	
+	if(bDate == "") {
+		var now = new Date();
+		var day = ("0" + now.getDate()).slice(-2);
+		var month = ("0" + (now.getMonth() + 1)).slice(-2);
+		var today = now.getFullYear() + "-" + (month) + "-" + (day);
+		split_date = today.split('-');
+	} else {
+		split_date = bDate.split('-');
+	}
+	
+	$.ajax({
+		url: 'ajax/get_years.php',
+		type: 'post',
+		data: { selected: split_date[0] },
+		success: function(response) {
+			$('#drop-year').html(response);
+		}
+	});
+	
+	$.ajax({
+		url: 'ajax/get_months.php',
+		type: 'post',
+		data: { selected: split_date[1] },
+		success: function(response) {
+			$('#drop-mos').html(response);
+		}
+	});
+	
+	$.ajax({
+		url: 'ajax/get_month_days.php',
+		type: 'post',
+		data: { selected: split_date[2] },
+		success: function(response) {
+			$('#drop-day').html(response);
+		}
+	});
+	
+	$('#drop-mos').on('change', function() {
+		getDaysDrop($('#drop-year').val(), $(this).val());
+	});
+	
+	$('#drop-year').on('change', function() {
+		getDaysDrop($(this).val(), $('#drop-mos').val());
+	});
+}
+
+
+function getDaysDrop( yearVal, moVal ) {
+	$.ajax({
+		url: 'ajax/get_month_days.php',
+		type: 'get',
+		data: { yr: yearVal, mos: moVal },
+		success: function(response) {
+			$('#drop-day').html(response);
+		}
+	});
+}
+
+
+function fillPriv( pID, appendTo ) {
+	$.ajax({
+		url: 'ajax/fill_privileges.php',
+		type: 'post',
+		data: { selected: pID },
+		success: function(response) {
+			$('#' + appendTo).html(response);
+		}
+	});
+}
+
+
+function fillCivilStatus( cstat ) {
+
+	var statusList = ["Single","Married","Separated","Widowed"];
+	var returnString = "";
+	
+	returnString += (cstat == "" || cstat == null) ? '<option value="0" disabled>-- Select --</option>' : '<option value="0" disabled selected>-- Select --</option>';
+	
+	for(var i = 0; i < statusList.length; i++) {
+		selected = (statusList[i] == cstat) ? ' selected' : '';
+		returnString += '<option value="' + statusList[i] + '"' + selected + '>' + statusList[i] + '</option>';
+	}
+
+	return returnString;
+	
+}
+
+function fillGender( gender ) {
+
+	var genderList = ["Male","Female"];
+	var returnString = "";
+	
+	returnString += (gender == "" || gender == null) ? '<option value="0" disabled>-- Select --</option>' : '<option value="0" disabled selected>-- Select --</option>';
+	
+	for(var i = 0; i < genderList.length; i++) {
+		selected = (genderList[i] == gender) ? ' selected' : '';
+		returnString += '<option value="' + genderList[i] + '"' + selected + '>' + genderList[i] + '</option>';
+	}
+
+	return returnString;
+	
+}
+
+function userEditForm( uID ) {
+	
+	$('#u-form').html('Loading &nbsp;&nbsp;<img src="images/loader.gif" height=16 width=16 />');
+	
+	$.ajax({
+		url: 'ajax/edituser.php',
+		type: 'post',
+		data: { id: uID },
+		success: function(response) {
+		
+			var json = $.parseJSON(response);
+			console.log(json);
+			var names = Object.getOwnPropertyNames(json);
+			var fields = Object.keys(names).length;
+			var count = Object.keys(json["user"]).length;
+			
+			var uInfo = json["user"][0];
+			var returnString = "";
+			
+			returnString += '<h5><span class="glyphicon glyphicon-pencil"></span> &nbsp;Edit User Information</h5><hr />';
+			returnString += '<div class="col-sm-4 col-md-4" style="margin-left:-15px;">';
+			returnString += '<input type="hidden" id="u-id" class="form-control input-sm" value="' + uInfo['uID'] + '" u-name="' + uInfo['Username'] + '">';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>First Name</strong>';
+			returnString += '<input type="text" id="u-fname" class="form-control input-sm" value="' + uInfo['Fname'] + '">';
+			returnString += '</div>';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Middle Name</strong>';
+			returnString += '<input type="text" id="u-mname" class="form-control input-sm" value="' + uInfo['Mname'] + '">';
+			returnString += '</div>';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Last Name</strong>';
+			returnString += '<input type="text" id="u-lname" class="form-control input-sm" value="' + uInfo['Lname'] + '">';
+			returnString += '</div>';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Username</strong>';
+			returnString += '<input type="text" id="u-uname" class="form-control input-sm" value="' + uInfo['Username'] + '">';
+			returnString += '</div>';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Password</strong>';
+			returnString += '<input type="password" id="u-pwd" class="form-control input-sm" value="secret" disabled>';
+			returnString += '</div>';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Confirm Password</strong>';
+			returnString += '<input type="password" id="u-conf-pwd" class="form-control input-sm" value="secret" disabled>';
+			returnString += '</div>';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Email Address</strong>';
+			returnString += '<input type="email" id="u-eaddr" class="form-control input-sm" value="' + uInfo['Email'] + '">';
+			returnString += '</div>';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Privileges</strong>';
+			returnString += '<select id="drop-priv" class="form-control input-sm">';
+			returnString += '<option value="0" disabled selected>-- Select --</option>';
+			returnString += '</select>';
+			returnString += '</div>';
+			returnString += '</div>';
+			returnString += '<div class="col-sm-4 col-md-4">';
+			returnString += '<form class="form-inline">';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Year</strong><br/>';
+			returnString += '<select id="drop-year" class="form-control input-sm">';
+			returnString += '<option value="0" disabled selected>Year</option>';
+			returnString += '</select>';
+			returnString += '<select id="drop-mos" class="form-control input-sm">';
+			returnString += '<option value="0" disabled selected>Mon</option>';
+			returnString += '</select>';
+			returnString += '<select id="drop-day" class="form-control input-sm">';
+			returnString += '<option value="0" disabled selected>Day</option>';
+			returnString += '</select>';
+			returnString += '</div>';
+			returnString += '</form>';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Contact</strong>';
+			returnString += '<input type="text" id="u-contact" class="form-control input-sm" value="' + uInfo['Contact'] + '">';
+			returnString += '</div>';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Civil Status</strong>';
+			returnString += '<select id="drop-cstat" class="form-control input-sm">';
+			returnString += fillCivilStatus(uInfo['Cstatus']);
+			returnString += '</select>';
+			returnString += '</div>';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Gender</strong>';
+			returnString += '<select id="drop-gender" class="form-control input-sm">';
+			returnString += fillGender(uInfo['Gender']);
+			returnString += '</select>';
+			returnString += '</div>';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Nationality</strong>';
+			returnString += '<input type="text" id="u-national" class="form-control input-sm" value="' + uInfo['Nation'] + '">';
+			returnString += '</div>';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Department</strong>';
+			returnString += '<input type="text" id="u-dept" class="form-control input-sm" value="' + uInfo['Dept'] + '">';
+			returnString += '</div>';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Position</strong>';
+			returnString += '<input type="text" id="u-pos" class="form-control input-sm" value="' + uInfo['Pos'] + '">';
+			returnString += '</div>';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Address</strong>';
+			returnString += '<textarea id="u-addr" class="form-control input-sm">' + uInfo['Addr'] + '</textarea>';
+			returnString += '</div>';
+			returnString += '<button class="btn btn-warning btn-sm pull-right" id="upd-u-save">Update</button>';
+			returnString += '<button class="btn btn-default btn-sm pull-right" id="cnl-user" style="margin-right:5px;">Cancel</button>';
+			returnString += '</div>';
+			
+			$('#u-form').html(returnString);
+			//fillSeniorsEM(cInfo['Senior'], 'drop-smngr');
+			$("html, body").animate({ scrollTop: 0 }, "fast");
+			birthdateFill(uInfo['Bday']);
+			fillPriv(uInfo['Priv'], 'drop-priv');
+			formAction();
+		}
+	});
+	
+}
+
+
+function userForm( action ) {
+	var returnString = "";
+	
+	if(action == 'show') {
+		returnString += '<h5><span class="glyphicon glyphicon-plus"></span> Create New User</h5><hr />';
+		returnString += '<div class="col-sm-4 col-md-4" style="margin-left:-15px;">';		
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>First Name</strong>';
+		returnString += '<input type="text" id="u-fname" class="form-control input-sm">';
+		returnString += '</div>';
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Middle Name</strong>';
+		returnString += '<input type="text" id="u-mname" class="form-control input-sm">';
+		returnString += '</div>';
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Last Name</strong>';
+		returnString += '<input type="text" id="u-lname" class="form-control input-sm">';
+		returnString += '</div>';
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Username</strong>';
+		returnString += '<input type="text" id="u-uname" class="form-control input-sm">';
+		returnString += '</div>';
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Password</strong>';
+		returnString += '<input type="password" id="u-pwd" class="form-control input-sm">';
+		returnString += '</div>';
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Confirm Password</strong>';
+		returnString += '<input type="password" id="u-conf-pwd" class="form-control input-sm">';
+		returnString += '</div>';
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Email Address</strong>';
+		returnString += '<input type="email" id="u-eaddr" class="form-control input-sm">';
+		returnString += '</div>';
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Privileges</strong>';
+		returnString += '<select id="drop-priv" class="form-control input-sm">';
+		returnString += '<option value="0" disabled selected>-- Select --</option>';
+		returnString += '</select>';
+		returnString += '</div>';
+		returnString += '</div>';
+		returnString += '<div class="col-sm-4 col-md-4">';
+		returnString += '<form class="form-inline">';
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Year</strong><br/>';
+		returnString += '<select id="drop-year" class="form-control input-sm">';
+		returnString += '<option value="0" disabled selected>Year</option>';
+		returnString += '</select>';
+		returnString += '<select id="drop-mos" class="form-control input-sm">';
+		returnString += '<option value="0" disabled selected>Mon</option>';
+		returnString += '</select>';
+		returnString += '<select id="drop-day" class="form-control input-sm">';
+		returnString += '<option value="0" disabled selected>Day</option>';
+		returnString += '</select>';
+		returnString += '</div>';
+		returnString += '</form>';
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Contact</strong>';
+		returnString += '<input type="text" id="u-contact" class="form-control input-sm">';
+		returnString += '</div>';
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Civil Status</strong>';
+		returnString += '<select id="drop-cstat" class="form-control input-sm">';
+		returnString += '<option value="0" disabled selected>-- Select --</option>';
+		returnString += '<option value="Single">Single</option>';
+		returnString += '<option value="Married">Married</option>';
+		returnString += '<option value="Separated">Separated</option>';
+		returnString += '<option value="Widowed">Widowed</option>';
+		returnString += '</select>';
+		returnString += '</div>';
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Gender</strong>';
+		returnString += '<select id="drop-gender" class="form-control input-sm">';
+		returnString += '<option value="0" disabled selected>-- Select --</option>';
+		returnString += '<option value="Male">Male</option>';
+		returnString += '<option value="Female">Female</option>';
+		returnString += '</select>';
+		returnString += '</div>';
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Nationality</strong>';
+		returnString += '<input type="text" id="u-national" class="form-control input-sm">';
+		returnString += '</div>';
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Department</strong>';
+		returnString += '<input type="text" id="u-dept" class="form-control input-sm">';
+		returnString += '</div>';
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Position</strong>';
+		returnString += '<input type="text" id="u-pos" class="form-control input-sm">';
+		returnString += '</div>';
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Address</strong>';
+		returnString += '<textarea id="u-addr" class="form-control input-sm"></textarea>';
+		returnString += '</div>';
+		returnString += '<button class="btn btn-success btn-sm pull-right" id="crt-u-save">Create</button>';
+		returnString += '<button class="btn btn-default btn-sm pull-right" id="cnl-user" style="margin-right:5px;">Cancel</button>';
+		returnString += '</div>';
+	} else if(action == 'hide') {
+		returnString += '<button class="btn btn-success btn-sm" id="crt-user"><span class="glyphicon glyphicon-plus"></span> &nbsp;Create New User</button>';
+	}
+	
+	return returnString;
+	
+}
+
+
+function formAction() {
+	$('#cnl-user').on('click', function() {
+		$('#u-form').html(userForm('hide'));
+		formAction();
+	});
+	
+	$('#crt-user').on('click', function() {
+		$('#u-form').html(userForm('show'));
+		formAction();
+		birthdateFill('');
+		fillPriv('', 'drop-priv');
+	});
+
+	$('#crt-u-save').on('click', function() {
+		
+		var fname = isNull($('#u-fname').val());
+		var mname = isNull($('#u-mname').val());
+		var lname = isNull($('#u-lname').val());
+		var uname = isNull($('#u-uname').val());
+		var pwd = isNull($('#u-pwd').val());
+		var confpwd = isNull($('#u-conf-pwd').val());
+		var email = isNull($('#u-eaddr').val());
+		var priv = isNull($('#drop-priv').val());
+		var year = isNull($('#drop-year').val());
+		var month = isNull($('#drop-mos').val());
+		var day = isNull($('#drop-day').val());
+		var contact = isNull($('#u-contact').val());
+		var civil = isNull($('#drop-cstat').val());
+		var gender = isNull($('#drop-gender').val());
+		var nation = isNull($('#u-national').val());
+		var dept = isNull($('#u-dept').val());
+		var pos = isNull($('#u-pos').val());
+		var addr = isNull($('#u-addr').val());
+		var birthdate = year + "-" + month + "-" + day;
+		
+
+		if( fname != "" && lname != "" && pwd != "" && confpwd != "" && pwd == confpwd && priv != "0" ) {
+			$.ajax({
+				url: 'ajax/createuser.php',
+				type: 'post',
+				data: {
+						fname: fname,
+						mname: mname,
+						lname: lname,
+						uname: uname,
+						pwd: pwd,
+						email: email,
+						priv: priv,
+						birthdate: birthdate,
+						contact: contact,
+						civil: civil,
+						gender: gender,
+						nation: nation,
+						dept: dept,
+						pos: pos,
+						addr: addr						
+				},
+				success: function(response) {
+					var json = $.parseJSON(response);
+					alertBox(response, 'msg-alert', '', '', 'json', 'fade');
+					if(json['message'][0] === 'success') {
+						$('#u-form').html(userForm('hide'));
+						viewUsersList('view_users', '', 'user-list-grid', 0, 15, 1);
+						formAction();
+					}
+				}
+			});
+		} else {
+			alertBox( '', 'msg-alert', 'warning', 'Make sure to fill-up required fields.', '', 'fade');
+		}
+	});
+	
+	$('#upd-u-save').on('click', function() {
+		var id = isNull($('#u-id').val());
+		var oldu = isNull($('#u-id').attr('u-name'));
+		var fname = isNull($('#u-fname').val());
+		var mname = isNull($('#u-mname').val());
+		var lname = isNull($('#u-lname').val());
+		var uname = isNull($('#u-uname').val());
+		var email = isNull($('#u-eaddr').val());
+		var priv = isNull($('#drop-priv').val());
+		var year = isNull($('#drop-year').val());
+		var month = isNull($('#drop-mos').val());
+		var day = isNull($('#drop-day').val());
+		var contact = isNull($('#u-contact').val());
+		var civil = isNull($('#drop-cstat').val());
+		var gender = isNull($('#drop-gender').val());
+		var nation = isNull($('#u-national').val());
+		var dept = isNull($('#u-dept').val());
+		var pos = isNull($('#u-pos').val());
+		var addr = isNull($('#u-addr').val());
+		var birthdate = year + "-" + month + "-" + day;
+		
+		if( fname != "" && lname != "" && priv != "0" ) {
+			$.ajax({
+				url: 'ajax/updateuser.php',
+				type: 'post',
+				data: {
+						id: id,
+						old: oldu,
+						fname: fname,
+						mname: mname,
+						lname: lname,
+						uname: uname,
+						email: email,
+						priv: priv,
+						birthdate: birthdate,
+						contact: contact,
+						civil: civil,
+						gender: gender,
+						nation: nation,
+						dept: dept,
+						pos: pos,
+						addr: addr						
+				},
+				success: function(response) {
+					var json = $.parseJSON(response);
+					alertBox(response, 'msg-alert', '', '', 'json', 'fade');
+					if(json['message'][0] === 'success') {
+						$('#u-form').html(userForm('hide'));
+						viewUsersList('view_users', '', 'user-list-grid', 0, 15, 1);
+						formAction();
+					}
+				}
+			});
+		} else {
+			alertBox( '', 'msg-alert', 'warning', 'Make sure to fill-up required fields.', '', 'fade');
+		}
+	});
+	
+}
+
+
+
+/* On click */
+$('#sub-sr').on('click', function() {
+	var search = isNull($('#sr-user').val());
+	viewUsersList('view_users', { key: search }, 'user-list-grid', 0, 15, 1);
+});
+
+$('#sr-user').keypress(function(e) {
+	if(e.which == 13) {
+		var search = isNull($(this).val());
+		viewUsersList('view_users', { key: search }, 'user-list-grid', 0, 15, 1);
+	}
+});
+
+/* On change */
+$('#drop-camp').on('change', function() {
+	$('#drop-team').html("<option disabled selected>Loading ..</option>");
+	
+	$.ajax({
+		url: 'ajax/fill_team.php',
+		type: 'get',
+		data: { camp: $(this).val() },
+		success: function(response) {
+			$('#drop-team').html(response);
+		},
+		error: function (xhr, ajaxOptions, thrownError) {
+           console.log(xhr.status);
+           console.log(xhr.responseText);
+           console.log(thrownError);
+		}
+	});
+});
+
+/* On load */
+loadFilters();
+formAction();
+viewUsersList('view_users', '', 'user-list-grid', 0, 15, 1);

@@ -1,0 +1,9 @@
+
+function vldUser() {	
+	var user = maxLength($("input[name='u-user']").val(), 20);
+	var pass = maxLength($("input[name='u-pass']").val(), 30);
+	if(user === "" || user === "") {
+		alertBox('', 'msg-alert', 'danger', 'Login failed, please try again!', '', '');
+		return false;
+	}
+}

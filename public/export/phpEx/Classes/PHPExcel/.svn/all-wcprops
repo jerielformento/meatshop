@@ -1,0 +1,119 @@
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel
+END
+RichText.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/RichText.php
+END
+HashTable.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/HashTable.php
+END
+DocumentProperties.php
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/DocumentProperties.php
+END
+Exception.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Exception.php
+END
+Calculation.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Calculation.php
+END
+ReferenceHelper.php
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/ReferenceHelper.php
+END
+Autoloader.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Autoloader.php
+END
+IOFactory.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/IOFactory.php
+END
+Settings.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Settings.php
+END
+Style.php
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Style.php
+END
+Chart.php
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Chart.php
+END
+NamedRange.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/NamedRange.php
+END
+Comment.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Comment.php
+END
+DocumentSecurity.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/DocumentSecurity.php
+END
+Worksheet.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Worksheet.php
+END
+CachedObjectStorageFactory.php
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/CachedObjectStorageFactory.php
+END
+IComparable.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/IComparable.php
+END
+Cell.php
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Cell.php
+END
+WorksheetIterator.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/WorksheetIterator.php
+END

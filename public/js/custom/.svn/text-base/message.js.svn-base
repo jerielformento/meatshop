@@ -1,0 +1,239 @@
+var availableTags;
+
+function viewSentItems( page, data, appendTo, startPage, endPage, currPage ) {
+	
+	$("#" + appendTo).html("<thead><tr><td colspan='8' style='text-align:center'><img src='images/loader.gif' height=34 width=34></td></tr></thead>");
+	
+	page = 'ajax/' + page + '.php';
+	
+	$.post(page, data, function(response) {
+		
+		var counter = 1;
+		var user = "";
+		var limit = 0;
+		// get response
+		
+		var json = $.parseJSON(response);
+		//console.log(json);
+		var names = Object.getOwnPropertyNames(json);
+		var fields = Object.keys(names).length;
+		var count = Object.keys(json["messages"]).length;
+		
+		returnString = "<thead>";
+		returnString += "<tr>";
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Title</span></th>";
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Author</span></th>";
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Content</span></th>";
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Date</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">View</span></th>";	
+		returnString += "</tr>" +
+		"</thead>" +
+		"<tbody>";
+		
+		limit = (count < endPage) ? count : endPage;
+		
+		for(var i = startPage; i < limit; i++) {
+			var msgInfo = json["messages"][i];
+			returnString += "<tr style=\"font-size:12px;\" class=\"clist\">";
+			returnString += "<td>" + msgInfo['title'] + "</td>";
+			returnString += "<td>" + msgInfo['content'].substring(0, 15) + ".." + "</td>";
+			returnString += "<td>" + msgInfo['author'] + "</td>";
+			returnString += "<td>" + msgInfo['date'] + "</td>";
+			returnString += "<td><button class=\"btn btn-info btn-sm m-con\" m-cont=\"" + msgInfo['content'] + "\" m-title=\"" + msgInfo['title'] + "\"  m-date=\"" + msgInfo['date'] + "\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>";
+			returnString += "</tr>";
+		}
+		
+		returnString += "</tbody>";
+		
+		$('#' + appendTo).html(returnString);
+		uPagination(json['limit']['pages'], currPage);
+		listAction();
+	}).fail(function() {
+		console.log( "Posting data failed." );
+	});
+	
+}
+
+
+function uPagination( limitPage, currentPage ) {
+	var returnString = "";
+	
+	if(limitPage !== 0) {
+		
+		returnString += '<ul class="pagination pagination-sm">';
+		returnString += (currentPage === 1) ? '<li class="disabled"><a href="#" aria-label="Previous">' : '<li><a href="#" aria-label="Previous" onclick="managePages(' + 1 + ')">';
+		returnString += '<span aria-hidden="true">&larr;</span>';
+		returnString += '</a>';
+		returnString += '</li>';
+		returnString += (currentPage === 1) ? '<li class="disabled"><a href="#" aria-label="Previous">' : '<li><a href="#" aria-label="Previous" onclick="managePages(\'prev\')">';
+		returnString += '<span aria-hidden="true">&laquo;</span>';
+		returnString += '</a>';
+		returnString += '</li>';		
+		returnString += '<li class="active"><a href="#">' + currentPage + '</a></li>';
+		returnString += (limitPage === currentPage) ? '<li class="disabled"><a href="#" aria-label="Next">' : '<li><a href="#" aria-label="Next" onclick="managePages(\'next\')">';
+		returnString += '<span aria-hidden="true">&raquo;</span>';
+		returnString += '</a>';
+		returnString += '</li>';
+		returnString += (limitPage === currentPage) ? '<li class="disabled"><a href="#" aria-label="Next">' : '<li><a href="#" aria-label="Next" onclick="managePages(' + limitPage + ')">';
+		returnString += '<span aria-hidden="true">&rarr;</span>';
+		returnString += '</a>';
+		returnString += '</li>';
+		returnString += '</ul>';
+	}
+	
+	$('#pagi-num-rows').html('<span class="label label-default pull-left">Page: ' + currentPage + ' out of ' + limitPage + '</span>');
+	$('#msg-pagi').html(returnString);
+}
+	
+	
+function managePages( val ) {
+	var range = 15;
+	var getCurp = $('#msg-pagi li.active a').text();
+	var opt = 0;
+	
+	if(val === 'next') {
+		opt = (+getCurp === 0) ? 0 : +getCurp + 1;
+	} else if(val === 'prev') {
+		opt = (+getCurp === 0) ? 1 : +getCurp - 1;
+	} else {
+		opt = +val;
+	}
+	
+	var end = range * opt;
+	var start = end - range;
+	
+	viewSentItems('view_sent_items', '', 'msg-list-grid', start, end, opt);
+}
+
+
+function listAction() {
+	$('button.m-con').on('click', function() {
+		var content = "<pre>" + $(this).attr('m-cont') + "<br/><br/>Date sent: " + $(this).attr('m-date') + "</pre>";
+		var title = $(this).attr('m-title');
+		confirmBoxLarge('msg-view-info',title,content,'msg-cmp','close','danger','show-box');
+	});
+}
+
+function confBoxEvents() {
+	
+}
+
+
+function loadSearch() {
+	$.ajax({
+		url: "ajax/search_recipient.php",
+		success: function(response) {
+			availableTags = $.parseJSON(response);
+		}
+	});
+}
+
+
+function split( val ) {
+  return val.split( /,\s*/ );
+}
+
+function extractLast( term ) {
+  return split( term ).pop();
+}
+
+
+function optionManager() {
+	$('#ms-team').on('click', function() {
+		$(this).attr('checked',true).val(1);
+		$('#ms-agt').removeAttr('checked').val(0);
+		var content = '<select id="drop-team" class="form-control input-sm"><option value="0" disabled selected>-- Team --</option></select>';
+		$('#sel-act').html(content);
+		fillTeam();
+	});
+
+	$('#ms-agt').on('click', function() {
+		$(this).attr('checked',true).val(1);
+		$('#ms-team').removeAttr('checked').val(0);
+		var content = '<input type="text" id="ms-to" class="form-control input-sm" placeholder="Search agent ..">';
+		$('#sel-act').html(content);
+		searchAct();
+	});
+}
+
+function fillTeam() {
+	$.ajax({
+		url: 'ajax/fill_team.php',
+		success: function(response) {
+			$('#drop-team').html(response);
+		}
+	});
+}
+
+function searchAct() {
+	$('#ms-to').bind( "keydown", function( event ) {
+		if ( event.keyCode === $.ui.keyCode.TAB &&
+			$( this ).autocomplete( "instance" ).menu.active ) {
+			event.preventDefault();
+		}
+	}).autocomplete({
+		minLength: 0,
+		source: function(request, response) {
+			response($.ui.autocomplete.filter(availableTags, extractLast(request.term)));
+		},
+		focus: function() {
+			return false;
+		},
+		select: function(event, ui) {
+			var terms = split(this.value);
+			// remove the current input
+			terms.pop();
+			// add the selected item
+			terms.push( ui.item.value );
+			// add placeholder to get the comma-and-space at the end
+			terms.push( "" );
+			this.value = terms.join( ", " );
+			return false;
+		}
+	});
+}
+
+/* On click */
+
+$('#send-msg').on('click', function() {
+	var title = isNull($('#ms-title').val());
+	var content = isNull($('#ms-body').val());
+	var msteam = isNull($('#ms-team').val());
+	var msagt = isNull($('#ms-agt').val());
+	var prio = isNull($('#drop-prio').val());
+	var sendtype = (msteam == 0) ? "agent" : "team";
+	var sendto = (msteam == 0) ? isNull($('#ms-to').val()) : isNull($('#drop-team').val());
+
+	if(sendto != "" && title != "" && content != "") {
+		$.ajax({
+			url: 'ajax/createmessage.php',
+			type: 'post',
+			data: { to: sendto, title: title, body: content, mstype: sendtype, priority: prio },
+			success: function(response) {
+				//console.log(response);
+				console.log($.parseJSON(response));
+				var json = $.parseJSON(response);
+				alertBox(response, 'msg-alert', '', '', 'json', 'fade');
+				if(json['message'][0] === 'success') {
+					$('#ms-title').val('');
+					$('#ms-body').val('');
+					$('#ms-team').attr('checked',true).val(1);
+					$('#ms-agt').removeAttr('checked').val(0);
+					var content = '<select id="drop-team" class="form-control input-sm"><option value="0" disabled selected>-- Team --</option></select>';
+					$('#sel-act').html(content);
+					fillTeam();
+				}
+			}
+		});
+	}
+});
+
+/* On change */
+
+
+/* On load */
+fillTeam();
+loadSearch();
+optionManager();
+viewSentItems('view_sent_items', '', 'msg-list-grid', 0, 15, 1);
+

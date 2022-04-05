@@ -1,0 +1,136 @@
+
+function viewHistoryList( page, data, appendTo, startPage, endPage, currPage ) { 
+
+	$("#" + appendTo).html("<thead><tr><td colspan='8' style='text-align:center'><img src='images/loader.gif' height=34 width=34></td></tr></thead>");
+	
+	page = 'ajax/' + page + '.php';
+	
+	$.post(page, data, function(response) {
+		var counter = 1;
+		var user = "";
+		var limit = 0;
+		// get response
+		
+		var json = $.parseJSON(response);
+		var names = Object.getOwnPropertyNames(json);
+		var fields = Object.keys(names).length;
+		var count = Object.keys(json["limiters"]).length;
+
+		var returnString = "";
+		
+		returnString = "<thead>";
+		returnString += "<tr>";
+		$('#tot-res').html(" &nbsp;<span class=\"label label-info\" style=\"padding-top:4px;\">" + count + " Total</span>");
+		/*
+		$tmp['Campaign'] = $lim[0];
+		$tmp['From'] = $lim[1];
+		$tmp['To'] = $lim[2];
+		$tmp['Limit'] = $lim[3];
+		$tmp['Count'] = $lim[4];
+		$tmp['CDate'] = $lim[6];
+		*/
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Campaign</span></th>";
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">From</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">To</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Limit</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Count</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Date</span></th>";
+		
+		returnString += "</tr>" +
+		"</thead>" +
+		"<tbody>";
+		
+		limit = (count < endPage) ? count : endPage;
+		
+		for(var i = startPage; i < limit; i++) {
+			returnString += "<tr>";
+			user = json['limiters'][i];
+			returnString += "<td style=\"font-size:12px;\">" + user['Campaign'] + "</td>";
+			returnString += "<td style=\"font-size:12px;\">" + user['From'] + "</td>";
+			returnString += "<td style=\"font-size:12px;\">" + user['To'] + "</td>";
+			returnString += "<td style=\"font-size:12px;\">" + user['Limit'] + "</td>";
+			returnString += "<td style=\"font-size:12px;\">" + user['Count'] + "</td>";
+			returnString += "<td style=\"font-size:12px;\">" + user['CDate'] + "</td>";
+			//returnString += "<td class=\"edit-agt\"><button type=\"button\" class=\"btn btn-xs btn-info\" g-id=\"" + user['Agent']['agt_id'] + "\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>";
+			returnString += "</tr>";
+		}
+		
+		
+		returnString += "</tbody>";
+		$("#" + appendTo).html(returnString);
+		
+		//actionAgentMngr();
+		//uPagination(json['limit']['pages'], currPage);
+		
+	}).fail(function() {
+		console.log( "Posting data failed." );
+	});
+	
+}
+
+
+function loadWeekRange() {
+	var date = $('#d-pick').val();
+	
+	$('#disp-range').html('<strong>Range: </strong> Loading ...');
+	
+	$.ajax({
+		url: 'ajax/get_daterange.php',
+		type: 'post',
+		data: { date: date },
+		success: function(response) {
+			$('#disp-range').html('<strong>Range: </strong>');
+			$('#disp-range').append(response);
+		}
+	});
+}
+
+/* On leave */
+$('#d-pick').on('change', function() {
+	loadWeekRange();
+});
+
+
+/* On click */
+$('#d-pick').datepicker({
+	inline: true, 
+	showOtherMonths: true,  
+	dateFormat: 'yy-mm-dd',
+	dayNamesMin: ['&nbsp;Sun', '&nbsp;Mon', '&nbsp;Tue', '&nbsp;Wed', '&nbsp;Thu', '&nbsp;Fri', '&nbsp;Sat'],  
+});
+
+$('#ins-limit').on('click', function() {
+	//console.log($('#wr-from').text());
+	var camp = isNull($('#drop-camp').val());
+	var from = isNull($('#wr-from').text());
+	var to = isNull($('#wr-to').text());
+	var dlimit = isNull($('#d-limit').val());
+	
+	if(camp != "" && camp != "0" && from != "" && to != "" && dlimit != "" && dlimit != "0") {
+		$.ajax({
+			url: 'ajax/add_limiter.php',
+			type: 'post',
+			data: {
+				camp: camp,
+				from: from,
+				to: to,
+				dlimit: dlimit
+			},
+			success: function(response) {
+				var json = $.parseJSON(response);
+				alertBox(response, 'msg-alert', '', '', 'json', 'fade');
+				if(json['message'][0] === 'success') {
+					viewHistoryList( 'view_limit', '', 'limit-list-grid', 0, 15, 1 );
+				}
+			}
+		});
+	} else {
+		alertBox('', 'get_agent', 'warning', 'Fill-up all fields.', '', 'fade');
+	}
+});
+
+
+/* On load */
+loadFilters();
+loadWeekRange();
+viewHistoryList( 'view_limit', '', 'limit-list-grid', 0, 15, 1 );

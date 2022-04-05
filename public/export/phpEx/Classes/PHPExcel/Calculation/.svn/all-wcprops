@@ -1,0 +1,101 @@
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Calculation
+END
+Engineering.php
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Calculation/Engineering.php
+END
+ExceptionHandler.php
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Calculation/ExceptionHandler.php
+END
+DateTime.php
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Calculation/DateTime.php
+END
+Exception.php
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Calculation/Exception.php
+END
+Database.php
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Calculation/Database.php
+END
+LookupRef.php
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Calculation/LookupRef.php
+END
+FormulaToken.php
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Calculation/FormulaToken.php
+END
+Functions.php
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Calculation/Functions.php
+END
+functionlist.txt
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Calculation/functionlist.txt
+END
+Logical.php
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Calculation/Logical.php
+END
+TextData.php
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Calculation/TextData.php
+END
+MathTrig.php
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Calculation/MathTrig.php
+END
+FormulaParser.php
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Calculation/FormulaParser.php
+END
+Statistical.php
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Calculation/Statistical.php
+END
+Financial.php
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Calculation/Financial.php
+END
+Function.php
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Calculation/Function.php
+END

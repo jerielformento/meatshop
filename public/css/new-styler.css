@@ -1,0 +1,188 @@
+.container-fluid {
+    color:#505050;
+}
+
+
+.sidebar-bg {
+	background:#660000 !important;
+    border-bottom:2px solid #555;
+}
+
+.header-bg {
+    background: rgba(50,53,56,1) !important;
+    background: -moz-linear-gradient(left, rgba(50,53,56,1) 0%, rgba(22,38,54,1) 100%);
+    background: -webkit-gradient(left top, right top, color-stop(0%, rgba(50,53,56,1)), color-stop(100%, rgba(22,38,54,1)));
+    background: -webkit-linear-gradient(left, rgba(50,53,56,1) 0%, rgba(22,38,54,1) 100%);
+    background: -o-linear-gradient(left, rgba(50,53,56,1) 0%, rgba(22,38,54,1) 100%);
+    background: -ms-linear-gradient(left, rgba(50,53,56,1) 0%, rgba(22,38,54,1) 100%);
+    background: linear-gradient(to right, rgba(50,53,56,1) 0%, rgba(22,38,54,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#323538', endColorstr='#162636', GradientType=1 );
+    border-bottom:2px solid #333;
+}
+
+.gty-ajxldr {
+	background:url(../ajax/get_image.php?i=loader&e=gif) no-repeat; 
+	height:30px;
+	width:30px;
+	background-size:30px 30px;
+	margin-left:auto;
+	margin-right:auto;
+} 
+
+.sidebar-divider {
+	margin-bottom:0 !important;
+}
+
+.err-span {
+	background:#D76464 !important;
+	color:#fff !important;
+	padding:3px 5px 3px 5px;
+	font-size:10px;
+}
+
+.inf-span {
+	background:#5EC0E4;
+	color:#fff !important;
+	padding:3px 5px 3px 5px;
+	font-size:10px;
+}
+
+.collapse-item.active {
+	color:#158F63 !important;
+}
+
+.sys-logo {
+	margin:10px auto 10px auto;
+	height:55px;
+	width:85px;
+	background:url(../ajax/get_image.php?i=getty_logo&e=png) no-repeat; 
+	background-size:85px 55px;
+}
+
+.sys-icon {
+	height:30px;
+	width:35px;
+	background:url(../ajax/get_image.php?i=icon_ph&e=png) no-repeat; 
+	background-size:35px 30px;
+}
+
+/* schedule grid label */
+#sched-grid tbody td.ui-selecting { 
+    background: #FECA40; 
+}
+
+#sched-grid tbody td.ui-selected { 
+    background: #F39814;
+}
+
+#sched-grid { 
+    list-style-type: none; 
+    margin: 0; 
+    padding: 0; 
+    width: 100%; 
+}
+
+#sched-grid tbody td { 
+    font-size: 15px !important; 
+    font-weight: 550;
+}
+
+#sched-grid tbody tr td { 
+    background:#ffffff; 
+}
+
+/* pause grid label */
+#pause-grid tbody td.ui-selecting { 
+    background: #FECA40 !important; 
+}
+
+#pause-grid tbody td.ui-selected { 
+    background: #F39814 !important;
+}
+
+#pause-grid { 
+    list-style-type: none !important; 
+    margin: 0 !important; 
+    padding: 0 !important; 
+    width: 100% !important; 
+}
+
+#pause-grid tbody td { 
+    font-size: 15px !important; 
+}
+
+#pause-grid tbody tr td { 
+    background:#ffffff !important; 
+}
+
+
+#sched-grid .sch-lbl {
+    text-align:left; 
+    font-size:15px; 
+    height:auto; 
+    width:auto; 
+    border:1px solid #ddd; 
+    background:#f8f8f8; 
+    padding:5px;
+    -webkit-box-shadow: 6px 6px 30px -14px rgba(0,0,0,0.59);
+    -moz-box-shadow: 6px 6px 30px -14px rgba(0,0,0,0.59);
+    box-shadow: 6px 6px 30px -14px rgba(0,0,0,0.59);
+}
+
+#pause-grid .sch-lbl {
+    text-align:left; 
+    font-size:15px; 
+    height:auto; 
+    width:auto; 
+    border:1px solid #ddd; 
+    background:#f8f8f8 !important; 
+    padding:5px;
+    -webkit-box-shadow: 6px 6px 30px -14px rgba(0,0,0,0.59);
+    -moz-box-shadow: 6px 6px 30px -14px rgba(0,0,0,0.59);
+    box-shadow: 6px 6px 30px -14px rgba(0,0,0,0.59);
+}
+
+.sch-type {
+    margin:5px -5px -5px -5px; 
+    padding:2px 5px 4px 5px;
+}
+
+.sch-type small {
+	color:#fff; 
+}
+
+.lv { background:#C075F0; }
+.prepost { background:#F0A175; }
+.ot { background:#F07575; }
+.ob { background:#F07575; }
+.ao { background:#75B6F0; }
+.reg { background:#ECECEC; }  
+.lunch { background:#F07575; }
+.sbreak { background:#F0A175; }  
+.reg small {
+	color:#505050 !important;
+}
+
+.card-body {
+    color:#333 !important;
+}
+
+/* customize scroll bar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track { 
+    background-color: #97A2B4;
+    border-left: 1px solid #777;
+	padding:2px;
+}
+
+::-webkit-scrollbar-thumb {
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#7d7e7d+0,0e0e0e+100;Black+3D */
+	background: #666F7D; /* Old browsers */
+	border-radius:2px;
+	border:1px solid #5C6571;
+}
+::-webkit-scrollbar-thumb:hover {
+    background-color: #aaa;
+}

@@ -1,0 +1,32 @@
+
+function confBoxEvents() {
+
+}
+
+/* On click */
+$('#res-acc-pwd').on('click', function() {
+	var currpwd = $('#curr-pwd').val();
+	var newpwd = $('#new-pwd').val();
+	var confpwd = $('#new-conf').val();
+	
+	$.ajax({
+		url: 'ajax/reset_account_pwd.php',
+		type: 'post',
+		data: { 
+				currpwd: currpwd, 
+				newpwd: newpwd,
+				confpwd: confpwd
+		},
+		success: function(response) {
+			//console.log(response);
+			alertBox(response, 'msg-alert', '', '', 'json', 'fade');
+		}
+	});
+});
+
+/* On change */
+
+
+/* On load */
+
+

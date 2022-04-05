@@ -1,0 +1,252 @@
+* {
+	margin: 0;
+	padding: 0;
+	font-family: 'Open Sans', sans-serif;
+	color:#505050;
+}
+
+.header {
+	margin-top:-10px;
+	height:90px;
+	background:#dddddd;
+}
+
+.header h4 {
+	color:#333;
+	padding:20px 0 10px 15px;
+}
+
+.header a {
+	margin:5px;
+	border:1px solid #bbb;
+	background:#ddd;
+	padding:5px;
+}
+
+.header a:hover {
+	text-decoration:none;
+}
+
+.content {
+	padding:0 20px 20px 20px;
+}
+
+.foo-cont {
+	height:auto;
+	background:none;
+	border-top:1px solid #C4BD59;
+	padding:10px 15px 10px 15px;
+	margin: 20px 0 0 0;
+}
+
+.footer {
+	padding:10px; 
+	font-size:12px !important;
+	margin:10px -20px 0 -20px;
+	width:110%;
+	text-align: center;
+	color:#528ebf;
+}
+
+.footer strong {
+	color:#6E681B;
+}
+
+.footer small {
+	color:#444; 
+	font-size:9px;
+}
+
+.footer .col {
+	color:#1B76BC;
+}
+
+.footer .sol {
+	color:#2DB573;
+}
+
+.foo-about {
+	margin:15px 0 20px 5px; border-bottom:1px solid #ddd; padding:0 0 10px 0;
+}
+
+.foo-about h4 {
+	color:#BDB228;
+}
+
+@media (min-width: 768px) {
+	.footer {
+		width:200px; 
+		margin:10px auto 0 auto; 
+		padding:5px; 
+		font-size:13px;
+	}
+
+	.footer small {
+		color:#444; 
+		font-size:10px;
+	}
+}
+
+.form-fix {
+	font-size:12px; 
+	background:#fff;
+	margin:20px 0 20px 0; 
+}
+
+ol.breadcrumb {
+	margin:-8px 0 -15px -25px;
+}
+
+.table tr th {
+	padding-right:18px !important;
+}
+
+.page-sign {
+	height:31px; 
+	width:auto;
+	margin-left:-15px;
+}
+
+.page-sign h5 {
+	margin:-15px 0 10px 0;
+	color:#3A77AA !important;
+	font-weight:bold;
+	text-shadow: 1px 1px 1px #e1e1e1;
+}
+
+.page-sign h5 span {
+	border:2px solid #5292C7;
+	padding:10px;
+	color:#f1f1f1 !important;
+	border-radius:50px;
+	background: #8EC7F7;
+	text-shadow: 1px 1px 1px #3A77AA;
+}
+
+body {
+	background:#f4f4f4 !important;
+}
+
+#pagi-num-rows {
+	margin-right:5px !important;
+}
+
+#data-pagi {
+	margin-left:5px !important;
+}
+
+.pagination li.active a {
+	background:#E4504E;
+	border:1px solid #c93e53;
+	font-size:15px !important;
+}
+
+.pagination li.active:hover a {
+	background:#E4504E;
+	border:1px solid #c93e53;
+	font-size:15px !important;
+}
+
+.pagination li a span {
+	font-size:15px !important;
+}
+
+.circle {
+	border-radius:50px !important; 
+	border:1px solid #ccc !important;
+	background:#F5F5F5;
+}
+
+.org {
+	border:1px solid #3096ED !important;
+}
+
+.vacant {
+	border:1px solid #aaa !important;
+}
+
+.square {
+	border-radius:3px !important; 
+	border:1px solid #ddd !important;
+	background:#F5F5F5;
+}
+
+.gty-user-icon {
+	height:27px; 
+	width:27px; 
+	position:relative; 
+	margin:-3px 10px 0 -5px; 
+}
+
+@media (min-width: 768px) {
+	.gty-user-icon {
+		height:27px; 
+		width:27px; 
+		position:absolute; 
+		margin-left:-40px; 
+		margin-top:-3px;
+	}
+}
+
+.err-span {
+	background:#D76464 !important;
+	color:#fff !important;
+	padding:3px 5px 3px 5px;
+	font-size:10px;
+}
+
+.inf-span {
+	background:#5EC0E4;
+	color:#fff !important;
+	padding:3px 5px 3px 5px;
+	font-size:10px;
+}
+
+/* images path */
+.gty-site-logo {
+	height:22px;
+	width:70px;
+	background:url(../ajax/get_image.php?i=logo_main) no-repeat; 
+	background-size:70px 22px;
+}
+
+.gty-ajxldr {
+	background:url(../ajax/get_image.php?i=loader&e=gif) no-repeat; 
+	height:30px;
+	width:30px;
+	background-size:30px 30px;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+/* customize scroll bar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track { 
+    background-color: #97A2B4;
+    border-left: 1px solid #777;
+	padding:2px;
+}
+
+::-webkit-scrollbar-thumb {
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#7d7e7d+0,0e0e0e+100;Black+3D */
+	background: #666F7D; /* Old browsers */
+	border-radius:2px;
+	border:1px solid #5C6571;
+}
+::-webkit-scrollbar-thumb:hover {
+    background-color: #aaa;
+}
+
+input, select, textarea {
+	font-size:14px !important;
+}
+
+.page-pin {
+	margin:5px 0 5px 0;
+}
+
+.page-pin span {
+	color:#E4504E !important;
+}

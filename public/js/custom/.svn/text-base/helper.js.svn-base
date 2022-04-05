@@ -1,0 +1,232 @@
+var page = "";
+var data = "";
+var header = "";
+	
+function uAjx( page, data, appendTo, dispType ) {
+	$('#' + appendTo).html("<option disabled selected>Loading ..</option>");
+	
+	$.ajax({
+		url: 'ajax/' + page + '.php',
+		type: 'post',
+		data: data,
+		success: function(response) {
+			if(dispType === 1) { 
+				$("#" + appendTo).html(response);
+			} else {
+				$("#" + appendTo).append(response);
+			}
+		}
+	});
+}
+var alertNum = 1;
+	
+function alertBox( arrData, appendTo, aClass, aString, returnType, animate ) {
+	
+	var returnString = "";
+	if(returnType === "json") {
+		var json = $.parseJSON(arrData);
+		
+		returnString += '<div class="alert alert-' + json['message'][0] + ' alert-dismissible" role="alert" id="' + alertNum + '">';
+		returnString += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+		
+		if(json['message'][0] == "success") {
+			returnString += '<span class="glyphicon glyphicon-ok-sign"></span> &nbsp;' + json['message'][1];
+		} else {
+			returnString += '<span class="glyphicon glyphicon-remove-sign"></span> &nbsp;' + json['message'][1];
+		}
+		
+		returnString += '</div>';
+	} else {
+		
+		returnString += '<div class="alert alert-' + aClass + ' alert-dismissible" role="alert" id="' + alertNum + '">';
+		returnString += '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+		
+		if(aClass == "success") {
+			returnString += '<span class="glyphicon glyphicon-ok-circle"></span> &nbsp;' + aString;
+		} else if(aClass == "danger") {
+			returnString += '<span class="glyphicon glyphicon-remove-circle"></span> &nbsp;' + aString;
+		} else if(aClass == "warning") {
+			returnString += '<span class="glyphicon glyphicon-ban-circle"></span> &nbsp;' + aString;
+		}
+		
+		returnString += '</div>';
+	}
+	
+	$('#' + appendTo).append(returnString);
+	if(animate === "fade") {
+		var storeAlert = alertNum;
+		$('#' + storeAlert).animate({
+			opacity: 0,
+		}, 6000, function() {
+			$('#' + storeAlert).remove();
+		});
+	}
+	
+	alertNum += 1;
+	
+}
+
+function confirmBox( boxId, boxTitle, boxMsg, bId, bName, bClass, appendTo ) {
+	returnString = "";
+	
+	returnString += '<div id="' + boxId + '" class="modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">'
+	returnString += '<div class="modal-dialog modal-sm">';
+	returnString += '<div class="modal-content">';
+	returnString += '<div class="modal-header">'
+	returnString += '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+	returnString += '<h5 class="modal-title"><strong>' + boxTitle + '</strong></h5>';
+	returnString += '</div>';
+	returnString += '<div class="modal-body" id="modal-body">' + boxMsg + '</div>';	
+	returnString += '<div class="modal-footer">';	
+	returnString += '<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>';
+	returnString += (bName === "close") ? "" : '<button id="' + bId + '" type="button" class="btn btn-sm btn-' + bClass + '">' + bName + '</button>';
+	returnString += '</div>';
+	returnString += '</div>';
+	returnString += '</div>';
+
+	$('#' + appendTo).html(returnString);
+	$('#' + boxId).modal({
+		backdrop: 'static',
+		keyboard: false
+	});
+	confBoxEvents();
+}
+
+function confirmBoxLarge( boxId, boxTitle, boxMsg, bId, bName, bClass, appendTo ) {
+	returnString = "";
+	
+	returnString += '<div id="' + boxId + '" class="modal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">'
+	returnString += '<div class="modal-dialog">';
+	returnString += '<div class="modal-content">';
+	returnString += '<div class="modal-header">'
+	returnString += '<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>';
+	returnString += '<h5 class="modal-title"><strong>' + boxTitle + '</strong></h5>';
+	returnString += '</div>';
+	returnString += '<div class="modal-body" id="modal-body">' + boxMsg + '</div>';	
+	returnString += '<div class="modal-footer">';	
+	returnString += '<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>';
+	returnString += (bName === "close") ? "" : '<button id="' + bId + '" type="button" class="btn btn-sm btn-' + bClass + '">' + bName + '</button>';
+	returnString += '</div>';
+	returnString += '</div>';
+	returnString += '</div>';
+
+	$('#' + appendTo).html(returnString);
+	$('#' + boxId).modal({
+		backdrop: 'static',
+		keyboard: false
+	});
+	confBoxEvents();
+}
+
+
+function isNull( val ) {
+	return (val === null) ? '' : val;
+}
+
+function isEmpty( val ) {
+	return (val === "") ? '' : val;
+}
+
+function isNA( val ) {
+	return (val === "") ? 'N/A' : val;
+}
+
+function maxLength( string, limit ) {
+	return ( string.length <= limit ) ? string : '';
+}
+
+function dropdownTimeMaker(time, date, title) {
+	var returnString = (time == '') ? "<option disabled selected>-- " + title + " --</option>" : "<option disabled>-- " + title + " --</option>";
+	var createTime = "";
+	
+	for(var i = 0; i <= 23; i++) {
+		for(var j = 0; j <= 45; j+=15) {
+			if(i <= 9) {
+				if(j == 0) {
+					createTime = "0" + i + ":" + j + j + ":00";
+					if(createTime == time) {
+						returnString += "<option value=\"" + createTime +  "\" selected>" + convertTime(date + " " + createTime) + "</option>";
+					} else {
+						returnString += "<option value=\"" + createTime +  "\">" + convertTime(date + " " + createTime) + "</option>";
+					}
+				} else {
+					createTime = "0" + i + ":" + j + ":00";
+					if(createTime == time) {
+						returnString += "<option value=\"" + createTime +  "\" selected>" + convertTime(date + " " + createTime) + "</option>";
+					} else {
+						returnString += "<option value=\"" + createTime +  "\">" + convertTime(date + " " + createTime) + "</option>";
+					}
+				}
+			} else {
+				if(j == 0) {
+					createTime = i + ":" + j + j + ":00";
+					if(createTime == time) {
+						returnString += "<option value=\"" + createTime +  "\" selected>" + convertTime(date + " " + createTime) + "</option>";
+					} else {
+						returnString += "<option value=\"" + createTime +  "\">" + convertTime(date + " " + createTime) + "</option>";
+					}
+				} else {
+					createTime = i + ":" + j + ":00";
+					if(createTime == time) {
+						returnString += "<option value=\"" + createTime +  "\" selected>" + convertTime(date + " " + createTime) + "</option>";
+					} else {
+						returnString += "<option value=\"" + createTime +  "\">" + convertTime(date + " " + createTime) + "</option>";
+					}
+				}
+			}
+		}
+	}
+
+	return returnString;
+}
+
+function convertTime( arg ) {
+	var dateStr = arg;
+	var returnFormat = "";
+	var conv = "";
+	var dateSplit = "";
+	var timeSplit = "";
+	var date = "";
+	
+	if(arg === "N/A") {
+		returnFormat = arg;
+	} else {
+		conv = dateStr.split(" ");
+		dateSplit = conv[0].split("-");
+		timeSplit = conv[1].split(":");
+		date = new Date(dateSplit[0], (dateSplit[1]-1), dateSplit[2], timeSplit[0], timeSplit[1], timeSplit[2]);
+		returnFormat = date.toLocaleTimeString();
+	}
+	/*
+	if(arg === "N/A") {
+		returnFormat = arg;
+	} else {
+		console.log(arg);
+		var convDate = new Date(arg);
+		var returnFormat = convDate.toLocaleTimeString();
+	}
+	*/
+	return returnFormat;
+}
+
+
+
+/* On load */
+
+function loadFilters() {
+	$('#drop-camp').html('<option disabled selected> Loading ..</option>');
+	$('#drop-team').html('<option disabled selected> Loading ..</option>');
+	
+	$.ajax({
+		url: 'ajax/fill_campaign.php',
+		success: function(response) {
+			$('#drop-camp').html(response);
+			$.ajax({
+				url: 'ajax/fill_team.php',
+				success: function(response) {
+					$('#drop-team').html(response);
+				}
+			});
+		}
+	});
+}

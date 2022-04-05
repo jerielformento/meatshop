@@ -1,0 +1,41 @@
+function viewProfile( page, data, appendTo, startPage, endPage, currPage ) { 
+
+	$("#" + appendTo).html("<thead><tr><td colspan='8' style='text-align:center'><img src='images/loader.gif' height=34 width=34></td></tr></thead>");
+	
+	page = 'ajax/' + page + '.php';
+	
+	$.post(page, data, function(response) {
+		var counter = 1;
+		var user = "";
+		var limit = 0;
+		// get response
+		
+		var json = $.parseJSON(response);
+		var names = Object.getOwnPropertyNames(json);
+		var fields = Object.keys(names).length;
+		var count = Object.keys(json["profile"]).length;
+
+		var returnString = "";
+		var profile = json['profile'][0];
+		returnString += "<p class=\"txt-inp\"><strong>Username:</strong> " + isNA(profile['User']) + "</p>";
+		returnString += "<p class=\"txt-inp\"><strong>Full Name:</strong> " + isNA(profile['FullName']) + "</p>";
+		returnString += "<p class=\"txt-inp\"><strong>Position:</strong> " + isNA(profile['Pos']) + "</p>";
+		returnString += "<p class=\"txt-inp\"><strong>Department:</strong> " + isNA(profile['Dept']) + "</p>";
+		returnString += "<p class=\"txt-inp\"><strong>Civil Status:</strong> " + isNA(profile['Cstatus']) + "</p>";
+		returnString += "<p class=\"txt-inp\"><strong>Gender:</strong> " + isNA(profile['Gender']) + "</p>";
+		returnString += "<p class=\"txt-inp\"><strong>Birthdate:</strong> " + isNA(profile['Bday']) + "</p>";
+		
+		$("#" + appendTo).html(returnString);
+		
+	}).fail(function() {
+		console.log( "Posting data failed." );
+	});
+	
+}
+
+/* On click */
+
+/* On change */
+
+/* On load */
+viewProfile('get_user_profile', '', 'prof-info', 0, 15, 1);

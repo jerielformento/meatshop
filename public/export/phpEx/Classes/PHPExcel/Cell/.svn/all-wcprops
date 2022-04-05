@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Cell
+END
+IValueBinder.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Cell/IValueBinder.php
+END
+DataType.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Cell/DataType.php
+END
+DataValidation.php
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Cell/DataValidation.php
+END
+DefaultValueBinder.php
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Cell/DefaultValueBinder.php
+END
+Hyperlink.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Cell/Hyperlink.php
+END
+AdvancedValueBinder.php
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Cell/AdvancedValueBinder.php
+END

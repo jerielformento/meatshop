@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Writer
+END
+Excel2007.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Writer/Excel2007.php
+END
+PDF.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Writer/PDF.php
+END
+CSV.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Writer/CSV.php
+END
+Exception.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Writer/Exception.php
+END
+Abstract.php
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Writer/Abstract.php
+END
+HTML.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Writer/HTML.php
+END
+Excel5.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Writer/Excel5.php
+END
+IWriter.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Writer/IWriter.php
+END

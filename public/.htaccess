@@ -1,0 +1,18 @@
+
+RewriteOptions inherit
+RewriteEngine On
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-l
+RewriteCond %{REQUEST_URI} !^/[0-9]+\..+\.cpaneldcv$
+RewriteCond %{REQUEST_URI} !^/\.well-known/pki-validation/[A-F0-9]{32}\.txt(?:\ Comodo\ DCV)?$
+RewriteRule ^(.+)$ index.php?url=$1 [QSA,L]
+
+ErrorDocument 404 /error.php
+RewriteCond %{HTTP_HOST} ^lommktg\.com$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.lommktg\.com$
+RewriteCond %{REQUEST_URI} !^/[0-9]+\..+\.cpaneldcv$
+RewriteCond %{REQUEST_URI} !^/\.well-known/pki-validation/[A-F0-9]{32}\.txt(?:\ Comodo\ DCV)?$
+RewriteRule ^/?$ "https\:\/\/lommktg\.com\/login" [R=301,L]
+

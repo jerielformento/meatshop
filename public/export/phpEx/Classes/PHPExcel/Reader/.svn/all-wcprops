@@ -1,0 +1,83 @@
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Reader
+END
+Excel2007.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Reader/Excel2007.php
+END
+Gnumeric.php
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Reader/Gnumeric.php
+END
+IReadFilter.php
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Reader/IReadFilter.php
+END
+CSV.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Reader/CSV.php
+END
+IReader.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Reader/IReader.php
+END
+Exception.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Reader/Exception.php
+END
+OOCalc.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Reader/OOCalc.php
+END
+SYLK.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Reader/SYLK.php
+END
+Abstract.php
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Reader/Abstract.php
+END
+HTML.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Reader/HTML.php
+END
+Excel5.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Reader/Excel5.php
+END
+DefaultReadFilter.php
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Reader/DefaultReadFilter.php
+END
+Excel2003XML.php
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Reader/Excel2003XML.php
+END

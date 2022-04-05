@@ -1,0 +1,17 @@
+<style>
+
+</style>
+
+<div class="row" style="font-size:12px; background:#fff;">
+	<h3 class="page-header"><span class="glyphicon glyphicon-home"></span> &nbsp;Home</h3>
+	<div class="panel panel-default pnl-cust">
+		<div class="panel-heading"><span class="glyphicon glyphicon-comment"></span> &nbsp;News / Updates</div>
+		<div class="table-responsive">
+			<div style="padding:10px;">
+				<h4>Welcome <span style="color:#4DC4F7;"><?php echo (isset($_SESSION['gty_usr_name'])) ? $_SESSION['gty_usr_name'] : ""; ?>!</span></h4>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="show-box"></div>
+<script type="text/javascript" src="js/custom/helper.js"></script>

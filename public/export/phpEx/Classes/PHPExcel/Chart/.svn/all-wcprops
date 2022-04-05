@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Chart
+END
+Layout.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Chart/Layout.php
+END
+Exception.php
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Chart/Exception.php
+END
+Legend.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Chart/Legend.php
+END
+Title.php
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Chart/Title.php
+END
+DataSeries.php
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Chart/DataSeries.php
+END
+DataSeriesValues.php
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Chart/DataSeriesValues.php
+END
+PlotArea.php
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/Chart/PlotArea.php
+END

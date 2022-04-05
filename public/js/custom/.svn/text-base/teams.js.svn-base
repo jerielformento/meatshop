@@ -1,0 +1,354 @@
+var teamLeaderList = "";
+var campaignList = "";
+var teamIDeMode = 0;
+
+function viewTeamList( page, data, appendTo, startPage, endPage, currPage  ) {
+	
+	$("#" + appendTo).html("<thead><tr><td colspan='8' style='text-align:center'><img src='images/loader.gif' height=34 width=34></td></tr></thead>");
+	
+	page = 'ajax/' + page + '.php';
+	
+	$.post(page, data, function(response) {
+		
+		var counter = 1;
+		var user = "";
+		var limit = 0;
+		// get response
+		
+		var json = $.parseJSON(response);
+		//console.log(json);
+		var names = Object.getOwnPropertyNames(json);
+		var fields = Object.keys(names).length;
+		var count = Object.keys(json["teams"]).length;
+		
+		returnString = "<thead>";
+		returnString += "<tr>";
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Campaign</span></th>";
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Team Name</span></th>";
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Team Leader</span></th>";	
+		returnString += "<th class=\"active\" colspan=\"2\" style=\"text-align:center;\"><span style=\"font-size:12px;\">Action</span></th>";	
+		returnString += "</tr>" +
+		"</thead>" +
+		"<tbody>";
+		
+		limit = (count < endPage) ? count : endPage;
+		
+		for(var i = startPage; i < limit; i++) {
+			var teamInfo = json["teams"][i];
+			
+			if(teamInfo['Campaign'] != "") {
+				returnString += "<tr style=\"font-size:12px;\" class=\"clist\">";
+				returnString += "<td>" + teamInfo['Campaign'] + "</td>";
+				returnString += "<td>" + teamInfo['Team'] + "</td>";
+				returnString += "<td>" + teamInfo['TL'] + "</td>";
+				returnString += "<td style=\"text-align:center;\"><button class=\"btn btn-warning btn-sm t-edt\" e-id=\"" + teamInfo['tid'] + "\"><span class=\"glyphicon glyphicon-pencil\" title=\"Edit\" style=\"cursor:pointer;\"></span></button></td>";
+				returnString += "<td style=\"text-align:center;\"><button class=\"btn btn-danger btn-sm t-del\" d-id=\"" + teamInfo['tid'] + "\" d-name=\"" + teamInfo['Team'] + "\"><span class=\"glyphicon glyphicon-trash\" title=\"Remove\" style=\"cursor:pointer;\"></span></button></td>";
+				returnString += "</tr>";
+			}
+		}
+		
+		returnString += "</tbody>";
+		
+		$('#' + appendTo).html(returnString);
+		listAction();
+		uPagination(json['limit']['pages'], currPage);
+	}).fail(function() {
+		console.log( "Posting data failed." );
+	});
+	
+}
+
+function uPagination( limitPage, currentPage ) {
+	var returnString = "";
+	
+	if(limitPage !== 0) {
+		
+		returnString += '<ul class="pagination pagination-sm">';
+		returnString += (currentPage === 1) ? '<li class="disabled"><a href="#" aria-label="Previous">' : '<li><a href="#" aria-label="Previous" onclick="managePages(' + 1 + ')">';
+		returnString += '<span aria-hidden="true">&larr;</span>';
+		returnString += '</a>';
+		returnString += '</li>';
+		returnString += (currentPage === 1) ? '<li class="disabled"><a href="#" aria-label="Previous">' : '<li><a href="#" aria-label="Previous" onclick="managePages(\'prev\')">';
+		returnString += '<span aria-hidden="true">&laquo;</span>';
+		returnString += '</a>';
+		returnString += '</li>';		
+		returnString += '<li class="active"><a href="#">' + currentPage + '</a></li>';
+		returnString += (limitPage === currentPage) ? '<li class="disabled"><a href="#" aria-label="Next">' : '<li><a href="#" aria-label="Next" onclick="managePages(\'next\')">';
+		returnString += '<span aria-hidden="true">&raquo;</span>';
+		returnString += '</a>';
+		returnString += '</li>';
+		returnString += (limitPage === currentPage) ? '<li class="disabled"><a href="#" aria-label="Next">' : '<li><a href="#" aria-label="Next" onclick="managePages(' + limitPage + ')">';
+		returnString += '<span aria-hidden="true">&rarr;</span>';
+		returnString += '</a>';
+		returnString += '</li>';
+		returnString += '</ul>';
+	}
+	
+	$('#pagi-num-rows').html('<span class="label label-default pull-left">Page: ' + currentPage + ' out of ' + limitPage + '</span>');
+	$('#team-pagi').html(returnString);
+}
+	
+	
+function managePages( val ) {
+	var range = 15;
+	var getCurp = $('#team-pagi li.active a').text();
+	var opt = 0;
+	
+	if(val === 'next') {
+		opt = (+getCurp === 0) ? 0 : +getCurp + 1;
+	} else if(val === 'prev') {
+		opt = (+getCurp === 0) ? 1 : +getCurp - 1;
+	} else {
+		opt = +val;
+	}
+	
+	var end = range * opt;
+	var start = end - range;
+	
+	viewTeamList('view_teams', '', 'team-list-grid', start, end, opt);
+}
+ 
+function confBoxEvents() {
+
+}
+
+function listAction() {
+	$('td button.t-edt').on('click', function() {
+		//alert('edit: ' + $(this).attr('e-id'));
+		editTeamForm($(this).attr('e-id'));
+	});
+	
+	$('td button.t-del').on('click', function() {
+		//alert('del: ' + $(this).attr('d-id'));
+		var t_id = $(this).attr('d-id');
+		confirmBox('team-del-info','Delete Team','Are you sure do you want to delete <br/><strong>' + $(this).attr('d-name') + '</strong> team ?','del-team','Delete','danger','show-box');
+		
+		$('#del-team').on('click', function() {
+			$.ajax({
+				url: 'ajax/teamdelete.php',
+				type: 'post',
+				data: { id: t_id },
+				success: function(response) {
+					var json = $.parseJSON(response);
+					alertBox(response, 'msg-alert', '', '', 'json', 'fade');
+					if(json['message'][0] === 'success') {
+						viewTeamList( 'view_teams', '', 'team-list-grid', 0, 15, 1);
+					}
+					
+					$('#team-del-info').modal('hide');
+				}
+			});
+		});
+	});
+}
+
+function teamForm( action ) {
+	var returnString = "";
+	
+	if(action == 'show') {
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Team</strong>';
+		returnString += '<input type="text" class="form-control input-sm" id="t-name" placeholder="Team Name">';
+		returnString += '</div>';
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Team Leader</strong>';
+		returnString += '<select id="drop-tlead" class="form-control input-sm">';
+		returnString += teamLeaderList;
+		returnString += '</select>';
+		returnString += '</div>';
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Campaign</strong>';
+		returnString += '<select id="drop-camp" class="form-control input-sm">';
+		returnString += campaignList;
+		returnString += '</select>';
+		returnString += '</div><hr />';
+		returnString += '<button class="btn btn-success btn-sm pull-right" id="crt-team">Create</button>';
+		returnString += '<button class="btn btn-default btn-sm pull-right" id="cnl-team" style="margin-right:5px;">Cancel</button>';		
+	} else if(action == 'hide') {
+		returnString += '<button class="btn btn-success btn-sm" id="create-team"><span class="glyphicon glyphicon-plus"></span> &nbsp;Create team</button>';
+	}
+	
+	$('#team-container').html(returnString);
+	formAction();
+}
+
+
+function editTeamForm( tID ) {
+
+	$('#team-container').html('Loading &nbsp;&nbsp;<img src="images/loader.gif" height=16 width=16 />');
+	
+	$.ajax({
+		url: 'ajax/teamedit.php',
+		type: 'post',
+		data: { id: tID },
+		success: function(response) {
+			
+			var json = $.parseJSON(response);
+			console.log(json);
+			var names = Object.getOwnPropertyNames(json);
+			var fields = Object.keys(names).length;
+			var count = Object.keys(json["team"]).length;
+			
+			var tInfo = json["team"][0];
+	
+			var returnString = "";
+			
+			teamIDeMode = tInfo['tID'];
+			//console.log(teamIDeMode);
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Team</strong>';
+			returnString += '<input type="text" class="form-control input-sm" id="t-name" placeholder="Team Name" value="' + tInfo['TName'] + '">';
+			returnString += '</div>';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Team Leader</strong>';
+			returnString += '<select id="drop-tlead" class="form-control input-sm">';
+			returnString += '</select>';
+			returnString += '</div>';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Campaign</strong>';
+			returnString += '<select id="drop-camp" class="form-control input-sm">';
+			returnString += '</select>';
+			returnString += '</div><hr />';
+			returnString += '<button class="btn btn-warning btn-sm pull-right" id="upd-team">Update</button>';
+			returnString += '<button class="btn btn-default btn-sm pull-right" id="cnl-team" style="margin-right:5px;">Cancel</button>';
+			
+			$('#team-container').html(returnString);
+			fillTeamLeaderEM(tInfo['TLead'], 'drop-tlead');
+			fillCampaignEM(tInfo['CName'], 'drop-camp');
+			$("html, body").animate({ scrollTop: 0 }, "fast");
+			formAction();
+			
+		}
+	});
+	
+}
+
+
+function formAction() {
+	
+	$('#cnl-team').on('click', function() {
+		teamIDeMode = 0;
+		teamForm('hide');
+	});
+	
+	$('#create-team').on('click', function() {
+		teamForm('show');
+	});
+	
+	$('#upd-team').on('click', function() {
+		var team = isNull($('#t-name').val());
+		var tlead = isNull($('#drop-tlead').val());
+		var tcamp = isNull($('#drop-camp').val());
+		
+		console.log(team + " " + tlead + " " + tcamp);
+		if(team != "" && tlead != "" && tcamp != "") {		
+			$.ajax({
+				url: 'ajax/teamupdate.php',
+				type: 'post',
+				data: {
+					team: team,
+					leader: tlead,
+					campaign: tcamp,
+					t_id: teamIDeMode
+				},
+				success: function(response) {
+					//console.log(response);
+					var json = $.parseJSON(response);
+					alertBox(response, 'msg-alert', '', '', 'json', 'fade');
+					if(json['message'][0] === 'success') {
+						$('#team-container').html(teamForm('hide'));
+						formAction();
+						viewTeamList('view_teams', '', 'team-list-grid', 0, 15, 1);
+					}
+				}
+			});
+		} else {
+			alertBox('', 'msg-alert', 'warning', 'Please fill-up all required field.', '', 'fade');
+		}
+	});
+	
+	$('#crt-team').on('click', function() {
+		var team = isNull($('#t-name').val());
+		var tlead = isNull($('#drop-tlead').val());
+		var tcamp = isNull($('#drop-camp').val());
+		
+		console.log(team + " " + tlead + " " + tcamp);
+		if(team != "" && tlead != "" && tcamp != "") {		
+			$.ajax({
+				url: 'ajax/teamcreate.php',
+				type: 'post',
+				data: {
+					team: team,
+					leader: tlead,
+					campaign: tcamp
+				},
+				success: function(response) {
+					var json = $.parseJSON(response);
+					alertBox(response, 'msg-alert', '', '', 'json', 'fade');
+					if(json['message'][0] === 'success') {
+						$('#team-container').html(teamForm('hide'));
+						formAction();
+						viewTeamList('view_teams', '', 'team-list-grid', 0, 15, 1);
+					}
+				}
+			});
+		} else {
+			alertBox('', 'msg-alert', 'warning', 'Please fill-up all required field.', '', 'fade');
+		}
+	});
+}
+
+
+function fillCampaign() {
+	$.ajax({
+		url: 'ajax/fill_campaign.php',
+		type: 'post',
+		success: function(response) {
+			campaignList = response;
+		}
+	});
+}
+
+
+function fillCampaignEM( setVal, appendTo ) {
+	$.ajax({
+		url: 'ajax/fill_campaign_edit.php',
+		type: 'post',
+		data: { selected: setVal },
+		success: function(response) {
+			$('#' + appendTo).html(response);
+		}
+	});
+}
+
+
+function fillTeamLead() {
+	$.ajax({
+		url: 'ajax/fill_teamleader.php',
+		type: 'post',
+		success: function(response) {
+			teamLeaderList = response;
+		}
+	});
+}
+
+
+function fillTeamLeaderEM( setVal, appendTo ) {
+	$.ajax({
+		url: 'ajax/fill_teamleader.php',
+		type: 'post',
+		data: { selected: setVal },
+		success: function(response) {
+			$('#' + appendTo).html(response);
+		}
+	});
+}
+
+/* On change */
+
+
+/* On load */
+fillCampaign();
+fillTeamLead();
+formAction();
+viewTeamList('view_teams', '', 'team-list-grid', 0, 15, 1);

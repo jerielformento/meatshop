@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/RichText
+END
+TextElement.php
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/RichText/TextElement.php
+END
+Run.php
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/RichText/Run.php
+END
+ITextElement.php
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/Classes/PHPExcel/RichText/ITextElement.php
+END

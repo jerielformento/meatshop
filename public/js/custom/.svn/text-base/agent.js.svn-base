@@ -1,0 +1,403 @@
+var availableTags;
+
+function ajxDispAgent( page, data, appendTo, startPage, endPage, currPage ) { 
+
+	$("#" + appendTo).html("<thead><tr><td colspan='8' style='text-align:center'><img src='images/loader.gif' height=34 width=34></td></tr></thead>");
+	
+	page = 'ajax/' + page + '.php';
+	
+	$.post(page, data, function(response) {
+		var counter = 1;
+		var user = "";
+		var limit = 0;
+		// get response
+		
+		var json = $.parseJSON(response);
+		var names = Object.getOwnPropertyNames(json);
+		var fields = Object.keys(names).length;
+		var count = Object.keys(json["users"]).length;
+
+		var returnString = "";
+		
+		returnString = "<thead>";
+		returnString += "<tr>";
+		$('#tot-res').html(" &nbsp;<span class=\"label label-info\" style=\"padding-top:4px;\">" + count + " Total</span>");
+		
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Agent</span></th>";
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">FirstName</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">MiddleName</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">LastName</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Campaign</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Team</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Info</span></th>";	
+		
+		returnString += "</tr>" +
+		"</thead>" +
+		"<tbody>";
+		
+		limit = (count < endPage) ? count : endPage;
+		
+		for(var i = startPage; i < limit; i++) {
+			returnString += "<tr>";
+			user = json['users'][i];
+			returnString += "<td style=\"font-size:12px;\" user=\"" + user['Agent']['agt_id'] + "\" agt=\""+ user['Agent']['agentID'] + "\" uName=\""+ user['Agent']['user'] + "\" site=\""+ user['Agent']['site'] + "\">" + user['Agent']['user'] + "</td>";
+			returnString += "<td style=\"font-size:12px;\">" + user['Agent']['fname'] + "</td>";
+			returnString += "<td style=\"font-size:12px;\">" + user['Agent']['mname'] + "</td>";
+			returnString += "<td style=\"font-size:12px;\">" + user['Agent']['lname'] + "</td>";
+			returnString += "<td style=\"font-size:12px;\">" + ((user['Agent']['camp_name'] == "") ? "N/A" : user['Agent']['camp_name']) + "</td>";
+			returnString += "<td style=\"font-size:12px;\">" + ((user['Agent']['team_name'] == "") ? "N/A" : user['Agent']['team_name']) + "</td>";
+			returnString += "<td class=\"edit-agt\"><button type=\"button\" class=\"btn btn-xs btn-info\" g-id=\"" + user['Agent']['agt_id'] + "\"><span class=\"glyphicon glyphicon-info-sign\"></span></button></td>";
+			returnString += "</tr>";
+		}
+		
+		
+		returnString += "</tbody>";
+		$("#" + appendTo).html(returnString);
+		
+		actionAgentMngr();
+		uPagination(json['limit']['pages'], currPage);
+		
+	}).fail(function() {
+		console.log( "Posting data failed." );
+	});
+	
+}
+	
+function uPagination( limitPage, currentPage ) {
+	var returnString = "";
+	
+	if(limitPage !== 0) {
+		
+		returnString += '<ul class="pagination pagination-sm">';
+		returnString += (currentPage === 1) ? '<li class="disabled"><a href="#" aria-label="Previous">' : '<li><a href="#" aria-label="Previous" onclick="managePages(' + 1 + ')">';
+		returnString += '<span aria-hidden="true">&larr;</span>';
+		returnString += '</a>';
+		returnString += '</li>';
+		returnString += (currentPage === 1) ? '<li class="disabled"><a href="#" aria-label="Previous">' : '<li><a href="#" aria-label="Previous" onclick="managePages(\'prev\')">';
+		returnString += '<span aria-hidden="true">&laquo;</span>';
+		returnString += '</a>';
+		returnString += '</li>';		
+		returnString += '<li class="active"><a href="#">' + currentPage + '</a></li>';
+		returnString += (limitPage === currentPage) ? '<li class="disabled"><a href="#" aria-label="Next">' : '<li><a href="#" aria-label="Next" onclick="managePages(\'next\')">';
+		returnString += '<span aria-hidden="true">&raquo;</span>';
+		returnString += '</a>';
+		returnString += '</li>';
+		returnString += (limitPage === currentPage) ? '<li class="disabled"><a href="#" aria-label="Next">' : '<li><a href="#" aria-label="Next" onclick="managePages(' + limitPage + ')">';
+		returnString += '<span aria-hidden="true">&rarr;</span>';
+		returnString += '</a>';
+		returnString += '</li>';
+		returnString += '</ul>';
+	}
+	
+	$('#pagi-num-rows').html('<span class="label label-default pull-left">Page: ' + currentPage + ' out of ' + limitPage + '</span>');
+	$('#agent-pagi').html(returnString);
+}
+	
+function managePages( val ) {
+	var range = 15;
+	var getCurp = $('#agent-pagi li.active a').text();
+	var opt = 0;
+	
+	if(val === 'next') {
+		opt = (+getCurp === 0) ? 0 : +getCurp + 1;
+	} else if(val === 'prev') {
+		opt = (+getCurp === 0) ? 1 : +getCurp - 1;
+	} else {
+		opt = +val;
+	}
+	
+	var end = range * opt;
+	var start = end - range;
+	
+	var campaign = $('#drop-camp').val();
+	var team = $('#drop-team').val();
+	
+	ajxDispAgent('view_agents', { camp: campaign, team: team }, 'agt-list-grid', start, end, opt);
+}
+
+/* use in confirmBox function in helper.js */
+function confBoxEvents() {
+
+	// agent reset password event
+	$('#r-confirm').on('click', function() {
+		var postArray = [];
+		
+		$('#agt-list-grid tr.a-highlight').each(function() {
+			postArray.push(new Array($(this).children('td:first-child').attr('user'),''));
+		});
+		$.ajax({
+			url: 'ajax/agent_reset_pwd.php',
+			data: { arr: postArray },
+			type: 'post',
+			success: function(response) {
+				alertBox(response, 'msg-alert', '', '', 'json', 'fade');
+				var json = $.parseJSON(response);
+			
+				if(json['message'][0] === 'success') {
+					var camp = isNull($('#drop-camp').val());
+					var team = isNull($('#drop-team').val());
+					ajxDispAgent('view_agents', { camp: camp, team: team }, 'agt-list-grid', 0, 15, 1);
+				}
+			}
+		});
+		$('#div-resetAgent').modal('hide');
+	});
+	
+	// agent remove event
+	$('#rmd-confirm').on('click', function() {
+		var postArray = [];
+		$('#agt-list-grid tr.a-highlight').each(function() {
+			postArray.push(new Array(
+										$(this).children('td:first-child').attr('agt'),
+										$(this).children('td:first-child').attr('uname'),
+										$(this).children('td:first-child').attr('site')
+									));
+		});
+		
+		$.ajax({
+			url: 'ajax/agent_removed.php',
+			data: { arr: postArray },
+			type: 'post',
+			success: function(response) {
+				alertBox(response, 'msg-alert', '', '', 'json', 'fade');
+				var json = $.parseJSON(response);
+			
+				if(json['message'][0] === 'success') {
+					var camp = isNull($('#drop-camp').val());
+					var team = isNull($('#drop-team').val());
+					ajxDispAgent('view_agents', { camp: camp, team: team }, 'agt-list-grid', 0, 15, 1);
+				}
+			}
+		});
+		$('#div-removedAgent').modal('hide');
+	});
+	
+	
+	$('#a-to-team').on('click', function() {
+		var agents = $('#tags').val();
+		var list = agents.trim();
+		var arr_list = list.split(',');
+		
+		arr_list.forEach(function(val) {
+			if(val !== "") {
+				var newVal = val.replace(" ", "");
+				invalidVal = jQuery.inArray(newVal, availableTags);
+				
+				if(invalidVal > 0) {
+					$('#list-agt').prepend('<li class="list-group-item list" user="' + val + '"><span class="badge"><span class="glyphicon glyphicon-remove" style="cursor:pointer;"></span></span> <span id="wew">' + val + '</span></li>');
+				} else {
+					alertBox('', 'get-agent #modal-body', 'warning', 'Adding an invalid name to list.', '', 'fade');
+				}
+			}
+		});
+		
+		$('#tags').val('');
+		$('#list-agt li span').on('click', function() {
+			$(this).parents('.list').remove();
+		});
+		
+	});
+	
+	
+	$('#a-agent').on('click', function() {
+		var agtInfo = [];
+		$("#list-agt [id]").each(function() {
+			agtInfo.push($(this).text().trim());
+		});
+		
+		if(agtInfo.length > 0) {
+			var camp = isNull($('#drop-camp').val());
+			var team = isNull($('#drop-team').val());
+			
+			$.ajax({
+				url: 'ajax/agent_getter.php',
+				type: 'post',
+				data: { camp_id: camp, team_id: team, agt_list: agtInfo },
+				success: function(response) {
+					var json = $.parseJSON(response);
+					alertBox(response, 'msg-alert', '', '', 'json', 'fade');
+					if(json['message'][0] === 'success') {
+						var camp = isNull($('#drop-camp').val());
+						var team = isNull($('#drop-team').val());
+						ajxDispAgent('view_agents', { camp: camp, team: team }, 'agt-list-grid', 0, 15, 1);
+					}
+				}
+			});
+		} else {
+			alertBox( '', 'msg-alert', 'warning', 'Empty list submitted.', '', 'fade');
+		}
+		
+		$('#get-agent').modal('hide');
+	});
+	
+	
+	$( "#tags" ).bind( "keydown", function( event ) {
+		if ( event.keyCode === $.ui.keyCode.TAB &&
+			$( this ).autocomplete( "instance" ).menu.active ) {
+			event.preventDefault();
+		}
+	}).autocomplete({
+		minLength: 0,
+		source: function(request, response) {
+			response($.ui.autocomplete.filter(availableTags, extractLast(request.term)));
+		},
+		focus: function() {
+			return false;
+		},
+		select: function(event, ui) {
+			var terms = split(this.value);
+			// remove the current input
+			terms.pop();
+			// add the selected item
+			terms.push( ui.item.value );
+			// add placeholder to get the comma-and-space at the end
+			terms.push( "" );
+			this.value = terms.join( ", " );
+			return false;
+		}
+	});
+}
+
+function actionAgentMngr() {
+	$('#agt-list-grid td').not('.edit-agt').on('click', function() {
+		var isChecked = $(this).parent().hasClass('a-highlight');
+		(isChecked === false) ? $(this).parent().addClass('a-highlight') : $(this).parent().removeClass('a-highlight');
+	});
+	
+	$('.edit-agt button').on('click', function() {
+		var aid = parseInt($(this).attr('g-id'));
+		$.ajax({
+			url: 'ajax/agent_info.php',
+			data: { agent_id: aid },
+			type: 'get',
+			success: function(response) {
+				json = $.parseJSON(response);
+				//console.log(json);
+				var info = json['Info'];
+				var content = "";
+				content += "<div style=\"font-size:12px;\">";
+				content += "<div class=\"form-group\" style=\"margin-bottom:5px;\"><strong>Agent:</strong> &nbsp;" + info['Agent'].toLowerCase() + "</div>";
+				content += "<div class=\"form-group\" style=\"margin-bottom:5px;\"><strong>Fullname:</strong> &nbsp;" + info['Fname'] + " " + info['Mname'] + " " + info['Lname'] + "</div>";
+				content += "<div class=\"form-group\" style=\"margin-bottom:5px;\"><strong>Email:</strong> &nbsp;" + info['Email'] + "</div>";
+				content += "<div class=\"form-group\" style=\"margin-bottom:5px;\"><strong>Contact:</strong> &nbsp;" + info['Contact'] + "</div>";
+				content += "<div class=\"form-group\" style=\"margin-bottom:5px;\"><strong>Birthdate:</strong> &nbsp;" + info['Bday'] + "</div>";
+				content += "<div class=\"form-group\" style=\"margin-bottom:5px;\"><strong>Address:</strong> &nbsp;" + info['Address'] + "</div>";
+				content += "<div class=\"form-group\" style=\"margin-bottom:5px;\"><strong>Department:</strong> &nbsp;" + info['Department'] + "</div>";
+				content += "<div class=\"form-group\" style=\"margin-bottom:5px;\"><strong>Position:</strong> &nbsp;" + info['Position'] + "</div>";
+				content += "</div>";
+				confirmBox('agt-edit-info','Agent Information',content,'','close','danger','show-rmd-box');
+			}
+		});
+	});
+}
+
+function loadSearch() {
+	$.ajax({
+		url: "ajax/search_agent.php",
+		success: function(response) {
+			availableTags = $.parseJSON(response);
+		}
+	});
+}
+
+function split( val ) {
+  return val.split( /,\s*/ );
+}
+
+function extractLast( term ) {
+  return split( term ).pop();
+}
+
+
+/* On click */ 
+		
+$('#sub-fil').on('click', function() {
+	var camp = isNull($('#drop-camp').val());
+	var team = isNull($('#drop-team').val());
+	var keyword = isNull($('#sr-agent').val());
+	console.log(team);
+	
+	if(camp != "" && team != "") {
+		ajxDispAgent('view_agents', { camp: camp, team: team, key: keyword }, 'agt-list-grid', 0, 15, 1);
+	}
+});
+
+$('#sub-sr').on('click', function() {
+	var camp = isNull($('#drop-camp').val());
+	var team = isNull($('#drop-team').val());
+	var keyword = isNull($('#sr-agent').val());
+	if(camp != "" && team != "") {
+		ajxDispAgent('view_agents', { camp: camp, team: team, key: keyword }, 'agt-list-grid', 0, 15, 1);
+	}
+});
+
+$('#sr-agent').keypress(function(e) {
+	if(e.which == 13) {
+		var camp = isNull($('#drop-camp').val());
+		var team = isNull($('#drop-team').val());
+		var keyword = isNull($('#sr-agent').val());
+		if(camp != "" && team != "") {
+			ajxDispAgent('view_agents', { camp: camp, team: team, key: keyword }, 'agt-list-grid', 0, 15, 1);
+		}
+	}
+});
+
+$('#r-agt-pwd').on('click', function() {
+	var count = 0;
+	
+	$('#agt-list-grid tr.a-highlight').each(function() {
+		count+=1;
+	});
+	
+	(count === 0) ? alertBox( '', 'msg-alert', 'warning', 'Please select agent before using this action.', '', 'fade') : confirmBox('div-resetAgent','Password Reset','Are you sure do you want to reset agent password ?','r-confirm','Reset','primary','show-box');
+});
+
+$('#r-agt-rmd').on('click', function() {
+	var count = 0;
+	$('#agt-list-grid tr.a-highlight').each(function() {
+		count+=1;
+	});	
+	(count === 0) ? alertBox( '', 'msg-alert', 'warning', 'Please select agent before using this action.', '', 'fade') : confirmBox('div-removedAgent','Remove Agent','Are you sure do you want to remove this agent to this?','rmd-confirm','Remove','danger','show-rmd-box');
+});
+
+$('#g-agt').on('click', function() {
+	var camp = isNull($('#drop-camp').val());
+	var team = isNull($('#drop-team').val());
+	
+	content = "";
+	content = '<span class="glyphicon glyphicon-search"></span> &nbsp;Find agents';
+	content += '<div class="input-group">';
+	content += '<input type="text" class="form-control input-sm" id="tags" placeholder="Search username">';
+	content += '<span class="input-group-btn">';
+	content += '<button class="btn btn-primary btn-sm" type="button" id="a-to-team">Add to list</button>';
+	content += '</span>';
+	content += '</div>';
+	content += '<ul class="list-group" id="list-agt" style="margin-top:5px;">';
+	content += '</ul>';
+	
+	(camp !== "" && team !== "") ? confirmBox('get-agent','Add agent in your Team', content,'a-agent','Submit','success','show-box') : alertBox( '', 'msg-alert', 'warning', 'Select campaign and team first.', '', 'fade');
+});	
+
+/* On change */
+$('#drop-camp').on('change', function() {
+	$('#drop-team').html("<option disabled selected>Loading ..</option>");
+	
+	$.ajax({
+		url: 'ajax/fill_team.php',
+		type: 'get',
+		data: { camp: $(this).val() },
+		success: function(response) {
+			$('#drop-team').html(response);
+		},
+		error: function (xhr, ajaxOptions, thrownError) {
+           console.log(xhr.status);
+           console.log(xhr.responseText);
+           console.log(thrownError);
+		}
+	});
+});
+
+
+/* On load */
+loadFilters();
+loadSearch();

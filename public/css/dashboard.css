@@ -1,0 +1,217 @@
+/*
+ * Base structure
+ */
+
+/* Move down content because we have a fixed navbar that is 50px tall */
+body {
+  padding-top: 50px;
+}
+
+
+/*
+ * Global add-ons
+ */
+
+.sub-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+/*
+ * Top navigation
+ * Hide default border to remove 1px line.
+ */
+.navbar-fixed-top {
+  border: 0;
+}
+
+/*
+ * Sidebar
+ */
+
+/* Hide for mobile, show later */
+.cust-side {
+    display:inline;
+    margin-top:-20px;
+    padding:5px 5px 0 5px;
+    color:#B7B9CC;
+	border-right:1px solid #ddd;
+}
+
+#hide-side-nav {
+  display:none;
+}
+
+#side-bar-menu {
+  margin-top:-12px;
+  margin-bottom:-10px;
+}
+
+.cust-side li {
+  padding:0;
+  font-size:15px !important;
+  font-weight: 400;
+  height:35px !important;
+  background:#f9f9f9 !important;
+  margin-bottom:-5px;
+  margin-left:10px;
+	border-bottom:1px solid #eee;
+}
+
+.cust-side li a {
+  color:#B7B9CC;
+  margin-top:-2px;
+  height:35px !important;
+  padding:8px 8px 2px 8px;
+}
+
+.cust-side li a span {
+    color:#505050;
+    padding:0 0 0 5px;
+}
+
+.cust-side li.active a span {
+    padding:0 0 10px 5px;
+	color:#f1f1f1;
+}
+
+.cust-side li.active a {
+    /*border-right:8px solid #ea2c49;*/
+    background:#E4504E;
+	color:#f1f1f1;
+}
+
+.cust-side li.active a:hover {
+	/*color: #777 !important;*/
+}
+
+.cust-side li.active:hover a {
+	/*background: #1E2127 !important;*/
+}
+
+.cust-side li a:hover {
+	
+}
+
+.cust-side li:hover a {
+	/*background: #f9f9f9 !important;*/
+}
+
+@media (min-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 45px;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    display: block;
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    margin-top:-5px;
+    padding:31px 0 0 5px;
+    background:#f9f9f9 !important;
+    color:#555;
+    width:16.5%;
+    min-width:60px;
+  }
+
+  #hide-side-nav {
+    display:block;
+  }
+
+  .cust-side li {
+    margin-bottom:2px;
+    height:35px !important;
+  }
+
+}
+
+@media (max-width: 768px) {
+	
+  .cust-side li a { 
+    color:#808b9c !important;
+  }
+
+  .cust-side li.active a {
+     color:#808b9c !important;
+  }
+
+  .cust-side li a span {
+    padding:0 0 10px 5px;
+  }
+
+  .cust-side li {
+    margin-top:-7px;
+    margin-bottom:7px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .cust-side {
+      margin-top:-2px;
+      padding:31px 5px 0 2px;
+      color:#f1f1f1;
+      white-space: nowrap;
+      overflow: hidden;
+      min-width:53px;
+      width:53px;
+  }
+
+  .cust-side li a span {
+    margin-right:10px;
+    height:35px !important;
+  }
+
+}
+
+
+/* Sidebar navigation */
+.nav-sidebar {
+  margin-right: -5px; /* 20px padding + 1px border */
+  margin-bottom: 20px;
+  margin-left: -20px;
+  margin-top:-19px;
+}
+
+.nav-sidebar > li > a {
+  padding-right: 20px;
+  padding-left: 20px;
+}
+
+/*
+ * Main content
+ */
+
+.main {
+  padding:25px 20px 20px 20px;
+}
+
+@media (min-width: 768px) {
+  .main {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+}
+.main .page-header {
+  margin-top: 0;
+}
+
+
+/*
+ * Placeholder dashboard ideas
+ */
+
+.placeholders {
+  margin-bottom: 30px;
+  text-align: center;
+}
+.placeholders h4 {
+  margin-bottom: 0;
+}
+.placeholder {
+  margin-bottom: 20px;
+}
+.placeholder img {
+  display: inline-block;
+  border-radius: 50%;
+}

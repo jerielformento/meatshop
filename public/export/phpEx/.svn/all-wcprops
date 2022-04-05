@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx
+END
+license.txt
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/license.txt
+END
+PHPExcel_1.8.0_doc.zip
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/PHPExcel_1.8.0_doc.zip
+END
+install.txt
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/install.txt
+END
+changelog.txt
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/repos/getty/!svn/ver/4/trunk/root/reports/phpEx/changelog.txt
+END

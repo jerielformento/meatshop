@@ -1,0 +1,439 @@
+var seniorMngrList = "";
+var opsMngrList = "";
+
+function viewCmpList( page, data, appendTo, startPage, endPage, currPage ) {
+	
+	$("#" + appendTo).html("<thead><tr><td colspan='8' style='text-align:center'><img src='images/loader.gif' height=34 width=34></td></tr></thead>");
+	
+	page = 'ajax/' + page + '.php';
+	
+	$.post(page, data, function(response) {
+		
+		var counter = 1;
+		var user = "";
+		var limit = 0;
+		// get response
+		
+		var json = $.parseJSON(response);
+		//console.log(json);
+		var names = Object.getOwnPropertyNames(json);
+		var fields = Object.keys(names).length;
+		var count = Object.keys(json["campaigns"]).length;
+		
+		returnString = "<thead>";
+		returnString += "<tr>";
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Campaign Name</span></th>";
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Senior Manager</span></th>";
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Operation Manager</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Rate</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">OT Rate</span></th>";	
+		returnString += "<th class=\"active\"><span style=\"font-size:12px;\">Grace Period</span></th>";	
+		returnString += "<th class=\"active\" colspan=\"2\" style=\"text-align:center;\"><span style=\"font-size:12px;\">Action</span></th>";	
+		returnString += "</tr>" +
+		"</thead>" +
+		"<tbody>";
+		
+		limit = (count < endPage) ? count : endPage;
+		console.log(limit + " " + startPage);
+		for(var i = startPage; i < limit; i++) {
+			var campInfo = json["campaigns"][i];
+			returnString += "<tr style=\"font-size:12px;\" class=\"clist\">";
+			returnString += "<td>" + campInfo['Name'] + "</td>";
+			returnString += "<td>" + campInfo['S_Mngr'] + "</td>";
+			returnString += "<td>" + campInfo['O_Mngr'] + "</td>";
+			returnString += "<td>" + campInfo['Rate'] + "</td>";
+			returnString += "<td>" + campInfo['OTrate'] + "</td>";
+			returnString += "<td>" + campInfo['Gperiod'] + "</td>";
+			returnString += "<td style=\"text-align:center;\"><button class=\"btn btn-warning btn-sm c-edt\" e-id=\"" + campInfo['c_ID'] + "\"><span class=\"glyphicon glyphicon-pencil\" title=\"Edit\" style=\"cursor:pointer;\"></span></button></td>";
+			returnString += "<td style=\"text-align:center;\"><button class=\"btn btn-danger btn-sm c-del\" d-id=\"" + campInfo['c_ID'] + "\" d-name=\"" + campInfo['Name'] + "\"><span class=\"glyphicon glyphicon-trash\" title=\"Remove\" d-id=\"" + campInfo['c_ID'] + "\" style=\"cursor:pointer;\"></span></button></td>";
+			returnString += "</tr>";
+		}
+		
+		returnString += "</tbody>";
+		
+		$('#' + appendTo).html(returnString);
+		listAction();
+		uPagination(json['limit']['pages'], currPage);
+	}).fail(function() {
+		console.log( "Posting data failed." );
+	});
+	
+}
+
+function uPagination( limitPage, currentPage ) {
+	var returnString = "";
+	
+	if(limitPage !== 0) {
+		
+		returnString += '<ul class="pagination pagination-sm">';
+		returnString += (currentPage === 1) ? '<li class="disabled"><a href="#" aria-label="Previous">' : '<li><a href="#" aria-label="Previous" onclick="managePages(' + 1 + ')">';
+		returnString += '<span aria-hidden="true">&larr;</span>';
+		returnString += '</a>';
+		returnString += '</li>';
+		returnString += (currentPage === 1) ? '<li class="disabled"><a href="#" aria-label="Previous">' : '<li><a href="#" aria-label="Previous" onclick="managePages(\'prev\')">';
+		returnString += '<span aria-hidden="true">&laquo;</span>';
+		returnString += '</a>';
+		returnString += '</li>';		
+		returnString += '<li class="active"><a href="#">' + currentPage + '</a></li>';
+		returnString += (limitPage === currentPage) ? '<li class="disabled"><a href="#" aria-label="Next">' : '<li><a href="#" aria-label="Next" onclick="managePages(\'next\')">';
+		returnString += '<span aria-hidden="true">&raquo;</span>';
+		returnString += '</a>';
+		returnString += '</li>';
+		returnString += (limitPage === currentPage) ? '<li class="disabled"><a href="#" aria-label="Next">' : '<li><a href="#" aria-label="Next" onclick="managePages(' + limitPage + ')">';
+		returnString += '<span aria-hidden="true">&rarr;</span>';
+		returnString += '</a>';
+		returnString += '</li>';
+		returnString += '</ul>';
+	}
+	
+	$('#pagi-num-rows').html('<span class="label label-default pull-left">Page: ' + currentPage + ' out of ' + limitPage + '</span>');
+	$('#cmp-pagi').html(returnString);
+}
+	
+	
+function managePages( val ) {
+	var range = 15;
+	var getCurp = $('#cmp-pagi li.active a').text();
+	var opt = 0;
+	
+	if(val === 'next') {
+		opt = (+getCurp === 0) ? 0 : +getCurp + 1;
+	} else if(val === 'prev') {
+		opt = (+getCurp === 0) ? 1 : +getCurp - 1;
+	} else {
+		opt = +val;
+	}
+	
+	var end = range * opt;
+	var start = end - range;
+	
+	viewCmpList( 'view_campaigns', '', 'cmp-list-grid', start, end, opt);
+}
+
+function campaignForm( action ) {
+
+	var returnString = "";
+	
+	if(action == 'show') {
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Campaign</strong>';
+		returnString += '<input type="text" class="form-control input-sm" id="c-campname" placeholder="Campaign Name">';
+		returnString += '</div>';
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Senior Manager</strong>';
+		returnString += '<select id="drop-smngr" class="form-control input-sm">';
+		returnString += '<option value="0" disabled selected>-- Select --</option>';
+		returnString += seniorMngrList;
+		returnString += '</select>';
+		returnString += '</div>';
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Rate</strong>';
+		returnString += '<input type="text" class="form-control input-sm" id="c-rate" placeholder="0">';
+		returnString += '</div>';
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>OT Rate</strong>';
+		returnString += '<input type="text" class="form-control input-sm" id="c-otrate" placeholder="0.0000">';
+		returnString += '</div>';
+		returnString += '<div class="form-group" style="margin-bottom:5px;">';
+		returnString += '<strong>Operation Manager</strong>';
+		returnString += '<textarea id="c-opsmngr" class="form-control input-sm" placeholder="Type operation manager\'s name .." rows="5" cols="30" style="resize:none;"></textarea>';
+		returnString += '</div>';
+		returnString += '<div class="form-group" style="margin-bottom:5px; width:100px;">';
+		returnString += '<strong>Grace Period</strong>';
+		returnString += '<select id="drop-gper" class="form-control input-sm">';
+		returnString += '<option value="0" selected>0 min</option>';
+		returnString += '<option value="1">1 min</option>';
+		returnString += '<option value="2">2 mins</option>';
+		returnString += '<option value="3">3 mins</option>';
+		returnString += '<option value="4">4 mins</option>';
+		returnString += '<option value="5">5 mins</option>';
+		returnString += '<option value="6">6 mins</option>';
+		returnString += '<option value="7">7 mins</option>';
+		returnString += '<option value="8">8 mins</option>';
+		returnString += '<option value="9">9 mins</option>';
+		returnString += '<option value="10">10 mins</option>';
+		returnString += '</select>';
+		returnString += '</div><hr />';
+		returnString += '<button class="btn btn-success btn-sm pull-right" id="crt-camp">Create</button>';
+		returnString += '<button class="btn btn-default btn-sm pull-right" id="cnl-camp" style="margin-right:5px;">Cancel</button>';		
+
+	} else if(action == 'hide') {
+		returnString += '<button class="btn btn-success btn-sm" id="create-camp"><span class="glyphicon glyphicon-plus"></span> &nbsp;Create campaign</button>';
+	}
+	
+	return returnString;
+}
+
+function editCampForm( cID ) {
+	
+	$('#camp-container').html('Loading &nbsp;&nbsp;<img src="images/loader.gif" height=16 width=16 />');
+	
+	$.ajax({
+		url: 'ajax/campaignedit.php',
+		type: 'post',
+		data: { id: cID },
+		success: function(response) {
+			
+			var json = $.parseJSON(response);
+			console.log(json);
+			var names = Object.getOwnPropertyNames(json);
+			var fields = Object.keys(names).length;
+			var count = Object.keys(json["campaign"]).length;
+			
+			var cInfo = json["campaign"][0];
+	
+			var returnString = "";
+			returnString += '<input type="hidden" id="upd-id" value="' + cInfo['cid'] + '">';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Campaign</strong>';
+			returnString += '<input type="text" class="form-control input-sm" id="c-campname" placeholder="Campaign Name" value="' + cInfo['Name'] + '">';
+			returnString += '</div>';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Senior Manager</strong>';
+			returnString += '<select id="drop-smngr" class="form-control input-sm">';
+			returnString += '</select>';
+			returnString += '</div>';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Rate</strong>';
+			returnString += '<input type="text" class="form-control input-sm" id="c-rate" placeholder="0" value="' + cInfo['Rate'] + '">';
+			returnString += '</div>';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>OT Rate</strong>';
+			returnString += '<input type="text" class="form-control input-sm" id="c-otrate" placeholder="0.0000" value="' + cInfo['OTrate'] + '">';
+			returnString += '</div>';
+			returnString += '<div class="form-group" style="margin-bottom:5px;">';
+			returnString += '<strong>Operation Manager</strong>';
+			returnString += '<textarea id="c-opsmngr" class="form-control input-sm" placeholder="Type operation manager\'s name .." rows="5" cols="30" style="resize:none;">' + cInfo['Ops'] + '</textarea>';
+			returnString += '</div>';
+			returnString += '<div class="form-group" style="margin-bottom:5px; width:100px;">';
+			returnString += '<strong>Grace Period</strong>';
+			returnString += '<select id="drop-gper" class="form-control input-sm">';
+			returnString += gracePerManager(cInfo['Gperiod']);
+			returnString += '</select>';
+			returnString += '</div><hr />';
+			returnString += '<button class="btn btn-warning btn-sm pull-right" id="upd-camp">Update</button>';
+			returnString += '<button class="btn btn-default btn-sm pull-right" id="cnl-camp" style="margin-right:5px;">Cancel</button>';
+			
+			$('#camp-container').html(returnString);
+			fillSeniorsEM(cInfo['Senior'], 'drop-smngr');
+			$("html, body").animate({ scrollTop: 0 }, "fast");
+			formAction();
+			
+		}
+	});
+	
+	
+}
+
+function gracePerManager( setVal ) {
+	returnString = "";
+	for(var i = 0; i <= 10; i++) {
+		selected = (setVal == i) ? "selected" : "";
+		if(i == 0) {
+			returnString += '<option value="' + i + '" ' + selected + '>' + i + ' min</option>';
+		} else {
+			returnString += '<option value="' + i + '" ' + selected + '>' + i + ' mins</option>';
+		}
+	}
+	
+	return returnString;
+}
+
+function confBoxEvents() {
+	
+}
+
+function split( val ) {
+  return val.split( /,\s*/ );
+}
+
+function extractLast( term ) {
+  return split( term ).pop();
+}
+
+function listAction() {
+	$('td button.c-edt').on('click', function() {
+		//alert("edit: " + $(this).attr('e-id'));
+		editCampForm($(this).attr('e-id'));
+		formAction();
+	});
+	
+	$('td button.c-del').on('click', function() {
+		//alert("del: " + $(this).attr('d-id'));
+		var c_id = $(this).attr('d-id');
+		confirmBox('cmp-del-info','Delete Campaign','Are you sure do you want to delete <br/><strong>' + $(this).attr('d-name') + '</strong> campaign ?','del-cmp','Delete','danger','show-box');
+		$('#del-cmp').on('click', function() {
+			$.ajax({
+				url: 'ajax/campaigndelete.php',
+				type: 'post',
+				data: { id: c_id },
+				success: function(response) {
+					var json = $.parseJSON(response);
+					alertBox(response, 'msg-alert', '', '', 'json', 'fade');
+					if(json['message'][0] === 'success') {
+						viewCmpList( 'view_campaigns', '', 'cmp-list-grid', 0, 15, 1);
+					}
+					
+					$('#cmp-del-info').modal('hide');
+				}
+			});
+		});
+	});
+}
+
+function formAction() {
+	
+	$('#cnl-camp').on('click', function() {
+		$('#camp-container').html(campaignForm('hide'));
+		formAction();
+	});
+	
+	$('#create-camp').on('click', function() {
+		$('#camp-container').html(campaignForm('show'));
+		formAction();
+	});
+	
+	
+	$( "#c-opsmngr" ).bind( "keydown", function( event ) {
+		if ( event.keyCode === $.ui.keyCode.TAB &&
+			$( this ).autocomplete( "instance" ).menu.active ) {
+			event.preventDefault();
+		}
+	}).autocomplete({
+		minLength: 0,
+		source: function(request, response) {
+			response($.ui.autocomplete.filter(opsMngrList, extractLast(request.term)));
+		},
+		focus: function() {
+			return false;
+		},
+		select: function(event, ui) {
+			var terms = split(this.value);
+			// remove the current input
+			terms.pop();
+			// add the selected item
+			terms.push( ui.item.value );
+			// add placeholder to get the comma-and-space at the end
+			terms.push( "" );
+			this.value = terms.join( ", " );
+			return false;
+		}
+	});
+	
+	
+	$('#crt-camp').on('click', function() {
+		var campaign = isNull($('#c-campname').val());
+		var senior = isNull($('#drop-smngr').val());
+		var rate = isNull($('#c-rate').val());
+		var OTrate = isNull($('#c-otrate').val());
+		var gracePer = isNull($('#drop-gper').val());
+		var ops = isNull($('#c-opsmngr').val());
+
+		if(campaign != "" && senior != "0" && rate != "" && OTrate != "" && gracePer != "" && ops != "") {
+			$.ajax({
+				url: 'ajax/campaigncreate.php',
+				type: 'post',
+				data: { 
+						campaign: campaign,
+						senior: senior,
+						rate: rate,
+						OTrate: OTrate,
+						gracePer: gracePer,
+						ops: ops					
+				},
+				success: function(response) {
+					var json = $.parseJSON(response);
+					alertBox(response, 'msg-alert', '', '', 'json', 'fade');
+					if(json['message'][0] === 'success') {
+						$('#camp-container').html(campaignForm('hide'));
+						formAction();
+						viewCmpList( 'view_campaigns', '', 'cmp-list-grid', 0, 15, 1);
+					}
+				}
+			});
+		} else {
+			alertBox( '', 'msg-alert', 'warning', 'Please fill-up all required field.', '', 'fade');
+		}
+	});
+	
+	$('#upd-camp').on('click', function() {
+		var idc = isNull($('#upd-id').val());
+		var campaign = isNull($('#c-campname').val());
+		var senior = isNull($('#drop-smngr').val());
+		var rate = isNull($('#c-rate').val());
+		var OTrate = isNull($('#c-otrate').val());
+		var gracePer = isNull($('#drop-gper').val());
+		var ops = isNull($('#c-opsmngr').val());
+
+		if(idc != "" && campaign != "" && senior != "0" && rate != "" && OTrate != "" && gracePer != "" && ops != "") {
+			$.ajax({
+				url: 'ajax/campaignupdate.php',
+				type: 'post',
+				data: { 
+						id: idc,
+						campaign: campaign,
+						senior: senior,
+						rate: rate,
+						OTrate: OTrate,
+						gracePer: gracePer,
+						ops: ops					
+				},
+				success: function(response) {
+					var json = $.parseJSON(response);
+					alertBox(response, 'msg-alert', '', '', 'json', 'fade');
+					if(json['message'][0] === 'success') {
+						$('#camp-container').html(campaignForm('hide'));
+						formAction();
+						viewCmpList( 'view_campaigns', '', 'cmp-list-grid', 0, 15, 1);
+					}
+				}
+			});
+		} else {
+			alertBox( '', 'msg-alert', 'warning', 'Please fill-up all required field.', '', 'fade');
+		}
+	});
+}
+
+function fillSeniors() {
+	$.ajax({
+		url: 'ajax/fill_seniors.php',
+		success: function(response) {
+			seniorMngrList = response;
+		}
+	});
+}
+
+function fillSeniorsEM( setVal, appendTo ) {
+
+	$('#' + appendTo).html('<option value="0" disabled selected> Loading ..</option>');
+	
+	$.ajax({
+		url: 'ajax/fill_seniors.php',
+		type: 'post',
+		data: { selected: setVal },
+		success: function(response) {
+			$('#' + appendTo).html(response);
+		}
+	});
+
+}
+
+function searchOpsMngr() {
+	$.ajax({
+		url: 'ajax/search_ops_mngr.php',
+		success: function(response) {
+			opsMngrList = $.parseJSON(response);
+		}
+	});
+}
+
+/* On click */
+
+/* On change */
+
+/* On load */
+
+formAction();
+fillSeniors();
+searchOpsMngr();
+viewCmpList( 'view_campaigns', '', 'cmp-list-grid', 0, 15, 1);
